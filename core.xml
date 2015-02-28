@@ -1,0 +1,167 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+
+	<Script file="localizations.lua" />
+	<!-- <Script file="optionpanel. lua" /> -->
+	<!-- <Script file="db.lua" /> -->
+	<Script file="core.lua" />
+
+	<Texture name="AFKFullscreenInfoDecoTpl" file="Interface\DialogFrame\UI-DialogBox-Background-Dark" virtual="true">
+		<Size x="0" y="2" />
+		<Anchors>
+			<Anchor point="LEFT" />
+			<Anchor point="RIGHT" />
+		</Anchors>
+	</Texture>
+
+	<Texture name="AFKFullscreenInfoDeco2Tpl" file="Interface\buttons\white8x8" virtual="true">
+		<Size x="0" y="2" />
+		<Anchors>
+			<Anchor point="LEFT" />
+			<Anchor point="RIGHT" />
+		</Anchors>
+		<Color r="0" g="0" b="0"/>
+	</Texture>
+
+	<Font name="AFKFullscreenInfoFont30" font="Fonts\FRIZQT__.TTF" virtual="true">
+		<Shadow>
+			<Offset x="1" y="-1"/>
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+		<FontHeight val="30"/>
+		<Color r="1.0" g="0.82" b="0"/>
+	</Font>
+
+	<Font name="AFKFullscreenInfoFont40" font="Fonts\FRIZQT__.TTF" virtual="true">
+		<Shadow>
+			<Offset x="1" y="-1"/>
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+		<FontHeight val="40"/>
+		<Color r="1.0" g="0.82" b="0"/>
+	</Font>
+
+	<Frame name="AFKFullScreenAnimationTemplate" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="AnimTexture1" alphaMode="ADD" alpha="0" setAllPoints="true" />
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="pulse" looping="REPEAT">
+				<Alpha childKey="AnimTexture1" startDelay="0" duration="0" order="1" change="-1"  />
+				<Alpha childKey="AnimTexture1" startDelay="0" duration="0.45" order="1" change="1"  />
+				<Alpha childKey="AnimTexture1" startDelay="0.75" duration="0.45" order="1" change="-1" />
+				<Alpha childKey="AnimTexture1" startDelay="1" duration="0.3" order="1" change="-1" />
+			</AnimationGroup>
+			<AnimationGroup parentKey="static">
+				<Alpha childKey="AnimTexture1" duration="0" order="1" change="1" />
+			</AnimationGroup>
+		</Animations>
+	</Frame>
+
+	<Frame name="AFKFullscreenFrame" hidden="true" frameStrata="FULLSCREEN" frameLevel="0" parent="UIParent" setAllPoints="true" alpha="0">
+		<Animations>
+			<AnimationGroup parentKey="FadeIn">
+				<Alpha duration="0.5" order="1" change="1" />
+				<Scripts>
+					<OnFinished>
+						self:GetParent():SetAlpha(1);
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+			<AnimationGroup parentKey="FadeOut">
+				<Alpha duration="0.5" order="1" change="-1" />
+				<Scripts>
+					<OnFinished>
+						local f = self:GetParent();
+						f:SetAlpha(0);
+						f:Hide(f);
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+		<Frames>
+			<Frame parentKey="Texture" inherits="AFKFullScreenAnimationTemplate" setAllPoints="true" hidden="true" />
+
+			<Frame parentKey="info" hidden="false" frameStrata="FULLSCREEN_DIALOG" topLevel="true" >
+				<Size x="0" y="120" />
+				<Anchors>
+					<Anchor point="LEFT" />
+					<Anchor point="RIGHT" />
+				</Anchors>
+				<Frames>
+					<PlayerModel parentKey="ClockModel">
+						<Size x="120" y="120" />
+						<Anchors>
+							<Anchor point="CENTER" x="-100" />
+						</Anchors>
+						<Scripts>
+							<OnEvent function="Model_OnEvent"/>
+							<OnUpdate function="Model_OnUpdate"/>
+						</Scripts>
+					</PlayerModel>
+				</Frames>
+
+				<Layers>
+					<Layer level="MEDIUM">
+						<Texture parentKey="DefaultBG" file="Interface\DialogFrame\UI-DialogBox-Background-Dark" setAllPoints="true" />
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture inherits="AFKFullscreenInfoDecoTpl"  alpha="0.8"><Anchors><Anchor point="TOP" y="3" /></Anchors></Texture>
+						<Texture inherits="AFKFullscreenInfoDecoTpl"  alpha="0.6"><Anchors><Anchor point="TOP" y="6" /></Anchors></Texture>
+						<Texture inherits="AFKFullscreenInfoDecoTpl"  alpha="0.4"><Anchors><Anchor point="TOP" y="9" /></Anchors></Texture>
+
+						<Texture inherits="AFKFullscreenInfoDecoTpl" alpha="0.8"><Anchors><Anchor point="BOTTOM" y="-3" /></Anchors></Texture>
+						<Texture inherits="AFKFullscreenInfoDecoTpl" alpha="0.6"><Anchors><Anchor point="BOTTOM" y="-6" /></Anchors></Texture>
+						<Texture inherits="AFKFullscreenInfoDecoTpl" alpha="0.4"><Anchors><Anchor point="BOTTOM" y="-9" /></Anchors></Texture>
+					</Layer>
+					<Layer level="TOP">
+						<Texture inherits="AFKFullscreenInfoDeco2Tpl" alpha="0.25"><Anchors><Anchor point="TOP" y="0" /></Anchors></Texture>
+						<Texture inherits="AFKFullscreenInfoDeco2Tpl" alpha="0.25"><Anchors><Anchor point="BOTTOM" y="0" /></Anchors></Texture>
+
+						<FontString parentKey="AFKText" inherits="AFKFullscreenInfoFont40">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativeKey="$parent.ClockModel" relativePoint="RIGHT" x="10" />
+							</Anchors>
+						</FontString>
+
+						<FontString parentKey="AFKTimer" inherits="AFKFullscreenInfoFont40">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.ClockModel" relativePoint="RIGHT" x="10" />
+							</Anchors>
+						</FontString>
+
+						<FontString parentKey="Character" inherits="AFKFullscreenInfoFont40">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativeKey="$parent" relativePoint="LEFT" x="10" />
+							</Anchors>
+						</FontString>
+
+						<FontString parentKey="Realm" inherits="AFKFullscreenInfoFont40">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="LEFT" x="10" />
+							</Anchors>
+						</FontString>
+
+						<FontString parentKey="Date" inherits="AFKFullscreenInfoFont40">
+							<Anchors>
+								<Anchor point="TOPRIGHT" relativeKey="$parent" relativePoint="RIGHT" x="-10" />
+							</Anchors>
+						</FontString>
+
+						<FontString parentKey="Time" inherits="AFKFullscreenInfoFont40">
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="RIGHT" x="-10" />
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad function="AFK_Fullscreen_OnLoad"/>
+		</Scripts>
+	</Frame>
+</Ui>
+

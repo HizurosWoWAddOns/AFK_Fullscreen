@@ -1,0 +1,13 @@
+package-as: AFK_fullscreen
+
+ignore:
+    - .pkgmeta
+	- .gitignore
+
+tools-used:
+    - data-tools
+    - dlcount
+    - findglobals
+
+enable-nolib-creation: no
+
