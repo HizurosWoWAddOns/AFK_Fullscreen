@@ -1,8 +1,8 @@
-## Interface: 60200
+## Interface: 70000
 ## Title: AFK Fullscreen Warning
 ## Notes: Signelice your character are afk as fullscreen info like low health or out of control warn.
 ## Author: Hizuro
 ## Version: @project-version@
 ## SavedVariables: afkfullscreenDB
 
-core.xml
+AFK_fullscreen.xml
