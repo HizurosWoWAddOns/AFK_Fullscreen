@@ -5,16 +5,16 @@ ignore:
 	- .gitignore
 
 externals:
-	lib/LibStub:
+	libs/LibStub:
 		url: svn://svn.wowace.com/wow/libstub/mainline/trunk
 		tag: latest
-	lib/CallbackHandler-1.0:
+	libs/CallbackHandler-1.0:
 		url: svn://svn.wowace.com/wow/callbackhandler/mainline/trunk/CallbackHandler-1.0
 		tag: latest
-	lib/AceConfig-3.0:
+	libs/AceConfig-3.0:
 		url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceConfig-3.0
 		tag: latest
-	lib/AceGUI-3.0:
+	libs/AceGUI-3.0:
 		url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceGUI-3.0
 		tag: latest
 	libs/LibDataBroker-1.1:
