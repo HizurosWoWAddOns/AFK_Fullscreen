@@ -1,0 +1,397 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+
+	<Script file="localizations.lua" />
+
+	<Script file="libs\LibStub\LibStub.lua"/>
+	<Include file="libs\CallbackHandler-1.0\CallbackHandler-1.0.xml"/>
+	<!-- Script file="libs\AceDB-3.0\AceDB-3.0.xml"/-->
+	<Include file="libs\AceGUI-3.0\AceGUI-3.0.xml"/>
+	<Include file="libs\AceConfig-3.0\AceConfig-3.0.xml"/>
+	<Script file="libs\LibDataBroker-1.1\LibDataBroker-1.1.lua"/>
+	<Script file="libs\LibDBIcon-1.0\LibDBIcon-1.0.lua"/>
+
+	<Script file="AFK_fullscreen.lua" />
+	<Script file="models.lua"/>
+	<Script file="skins.lua"/>
+
+	<Texture name="AFKFullscreenInfoDecoTpl" file="Interface\DialogFrame\UI-DialogBox-Background-Dark" virtual="true">
+		<Size x="0" y="2" />
+		<Anchors>
+			<Anchor point="LEFT" />
+			<Anchor point="RIGHT" />
+		</Anchors>
+	</Texture>
+
+	<Font name="AFKFullscreenInfoFont20" font="Fonts\FRIZQT__.TTF" virtual="true">
+		<Shadow>
+			<Offset x="1" y="-1"/>
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+		<FontHeight val="20"/>
+		<Color r="1.0" g="0.82" b="0"/>
+	</Font>
+
+	<Font name="AFKFullscreenInfoFont30" font="Fonts\FRIZQT__.TTF" virtual="true">
+		<Shadow>
+			<Offset x="1" y="-1"/>
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+		<FontHeight val="30"/>
+		<Color r="1.0" g="0.82" b="0"/>
+	</Font>
+
+	<Font name="AFKFullscreenInfoFont40" font="Fonts\FRIZQT__.TTF" virtual="true">
+		<Shadow>
+			<Offset x="1" y="-1"/>
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+		<FontHeight val="40"/>
+		<Color r="1.0" g="0.82" b="0"/>
+	</Font>
+
+	<Frame name="AFKFullscreenFrameTemplate" alpha="0" setAllPoints="true" toplevel="true" virtual="true">
+		<Animations>
+			<AnimationGroup parentKey="FadeIn">
+				<Alpha duration="0.45" order="1" fromAlpha="0" toAlpha="1" />
+				<Scripts>
+					<OnStart>
+						local parent = self:GetParent();
+						parent:Show();
+					</OnStart>
+					<OnFinished>
+						local parent = self:GetParent();
+						parent:SetAlpha(1);
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+			<AnimationGroup parentKey="FadeOut">
+				<Alpha duration="0.45" order="1" fromAlpha="1" toAlpha="0" />
+				<Scripts>
+					<OnFinished>
+						local parent = self:GetParent();
+						parent.FullScreenWarning:Hide();
+						parent:SetAlpha(0);
+						parent:Hide();
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+		<Frames>
+			<PlayerModel parentKey="FullScreenBGModel" frameLevel="0" setAllPoints="true" hidden="true">
+				<Scripts>
+					<OnLoad function="AFKFullscreenFrameModel_OnLoad"/>
+					<OnEvent function="AFKFullscreenFrameModel_OnEvent"/>
+				</Scripts>
+			</PlayerModel>
+
+			<Frame parentKey="FullScreenWarning" frameLevel="1" setAllPoints="true" hidden="true" >
+				<Layers>
+					<Layer level="BACKGROUND" textureSubLevel="0">
+						<Texture parentKey="AnimTexture1" alphaMode="ADD" alpha="0" setAllPoints="true" />
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="pulse" setToFinalAlpha="true" looping="REPEAT">
+						<Alpha childKey="AnimTexture1" duration="0" order="1" fromAlpha="0.3" toAlpha="0.3"/>
+						<Alpha childKey="AnimTexture1" duration="0.75" order="2" fromAlpha=".3" toAlpha=".8"/>
+						<Alpha childKey="AnimTexture1" startDelay="1" duration="0.75" order="2" fromAlpha=".8" toAlpha=".3"/>
+					</AnimationGroup>
+					<AnimationGroup parentKey="static">
+						<Alpha childKey="AnimTexture1" duration="0" order="1" change="1" fromAlpha="1" toAlpha="1" />
+					</AnimationGroup>
+				</Animations>
+				<Scripts>
+					<OnShow function="AFKFullscreenFrame_Flasher_OnShow"/>
+					<OnHide function="AFKFullscreenFrame_Flasher_OnHide"/>
+				</Scripts>
+			</Frame>
+
+			<PlayerModel parentKey="BigPlayerModel" frameLevel="2" hidden="true">
+				<Size x="290" y="650" />
+				<Anchors>
+					<Anchor point="RIGHT" x="-50" />
+				</Anchors>
+				<Scripts>
+					<OnLoad function="AFKFullscreenFrameModel_OnLoad"/>
+					<OnEvent function="AFKFullscreenFrameModel_OnEvent"/>
+					<OnShow function="AFKFullscreenFrame_BigPlayerModel_OnShow"/>
+				</Scripts>
+			</PlayerModel>
+
+			<Frame parentKey="PanelHolder">
+				<Size x="0" y="140" />
+				<Anchors>
+					<Anchor point="LEFT" />
+					<Anchor point="RIGHT" />
+				</Anchors>
+			</Frame>
+
+			<PlayerModel parentKey="PanelBackgroundModel" frameLevel="2" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.PanelHolder" />
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.PanelHolder" />
+				</Anchors>
+				<Scripts>
+					<OnLoad function="AFKFullscreenFrameModel_OnLoad"/>
+					<OnEvent function="AFKFullscreenFrameModel_OnEvent"/>
+					<!-- OnShow function="AFKFullscreenFrame_BackgroundModel_OnShow"/ -->
+				</Scripts>
+			</PlayerModel>
+
+			<Frame parentKey="PanelBackground" frameLevel="3">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.PanelHolder" />
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.PanelHolder" />
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND" textureSubLevel="0">
+						<Texture parentKey="Layer1" setAllPoints="true" horizTile="true" vertTile="true"/>
+					</Layer>
+					<Layer level="BACKGROUND" textureSubLevel="1">
+						<Texture parentKey="Layer2" setAllPoints="true" horizTile="true" vertTile="true"/>
+					</Layer>
+					<Layer level="BACKGROUND" textureSubLevel="2">
+						<Texture parentKey="Layer3" setAllPoints="true" horizTile="true" vertTile="true"/>
+					</Layer>
+				</Layers>
+			</Frame>
+
+			<Frame parentKey="PanelShadow" frameLevel="3">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.PanelHolder" />
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.PanelHolder" />
+				</Anchors>
+				<Layers>
+					<Layer level="BORDER" textureSubLevel="0">
+						<Texture parentKey="InsetTop" file="Interface\common\ShadowOverlay-Top">
+							<Size y="64"/>
+							<KeyValues>
+								<KeyValue key="defaultHeight" value="64" type="number"/>
+							</KeyValues>
+							<Anchors><Anchor point="TOP" /><Anchor point="LEFT" /><Anchor point="RIGHT" /></Anchors>
+						</Texture>
+						<Texture parentKey="InsetBottom" file="Interface\common\ShadowOverlay-Bottom">
+							<Size y="64"/>
+							<KeyValues>
+								<KeyValue key="defaultHeight" value="64" type="number"/>
+							</KeyValues>
+							<Anchors><Anchor point="BOTTOM" /><Anchor point="LEFT" /><Anchor point="RIGHT" /></Anchors>
+						</Texture>
+						<Texture parentKey="OutsetTop" file="Interface\common\ShadowOverlay-Bottom">
+							<Size y="64"/>
+							<KeyValues>
+								<KeyValue key="defaultHeight" value="64" type="number"/>
+							</KeyValues>
+							<Anchors><Anchor point="BOTTOM" relativePoint="TOP" y="0" /><Anchor point="LEFT" /><Anchor point="RIGHT" /></Anchors>
+						</Texture>
+						<Texture parentKey="OutsetBottom" file="Interface\common\ShadowOverlay-Top">
+							<Size y="64"/>
+							<KeyValues>
+								<KeyValue key="defaultHeight" value="64" type="number"/>
+							</KeyValues>
+							<Anchors><Anchor point="TOP" relativePoint="BOTTOM" y="0" /><Anchor point="LEFT" /><Anchor point="RIGHT" /></Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+
+			<Frame parentKey="PanelBorder" frameLevel="3">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.PanelHolder" />
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.PanelHolder" />
+				</Anchors>
+				<Layers>
+					<Layer level="BORDER" textureSubLevel="1">
+						<Texture parentKey="Top" horizTile="true">
+							<Size y="64"/>
+							<KeyValues>
+								<KeyValue key="point" value="TOP" type="string"/>
+								<KeyValue key="pointDefaultX" value="0" type="number"/>
+								<KeyValue key="pointDefaultY" value="0" type="number"/>
+							</KeyValues>
+							<Anchors><Anchor point="TOP" /><Anchor point="LEFT" /><Anchor point="RIGHT" /></Anchors>
+						</Texture>
+						<Texture parentKey="Bottom" horizTile="true">
+							<Size y="64"/>
+							<KeyValues>
+								<KeyValue key="point" value="BOTTOM" type="string"/>
+								<KeyValue key="pointDefaultX" value="0" type="number"/>
+								<KeyValue key="pointDefaultY" value="0" type="number"/>
+							</KeyValues>
+							<Anchors><Anchor point="BOTTOM" /><Anchor point="LEFT" /><Anchor point="RIGHT" /></Anchors>
+						</Texture>
+						<Texture parentKey="Left" vertTile="true">
+							<Size y="64"/>
+							<KeyValues>
+								<KeyValue key="point" value="LEFT" type="string"/>
+								<KeyValue key="pointDefaultX" value="0" type="number"/>
+								<KeyValue key="pointDefaultY" value="0" type="number"/>
+							</KeyValues>
+							<Anchors><Anchor point="LEFT" /><Anchor point="TOP" /><Anchor point="BOTTOM" /></Anchors>
+						</Texture>
+						<Texture parentKey="Right" vertTile="true">
+							<Size y="64"/>
+							<KeyValues>
+								<KeyValue key="point" value="RIGHT" type="string"/>
+								<KeyValue key="pointDefaultX" value="0" type="number"/>
+								<KeyValue key="pointDefaultY" value="0" type="number"/>
+							</KeyValues>
+							<Anchors><Anchor point="RIGHT" /><Anchor point="TOP" /><Anchor point="BOTTOM" /></Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+
+			<Frame parentKey="PanelBorderEdge" frameLevel="3">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.PanelHolder" />
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.PanelHolder" />
+				</Anchors>
+				<Layers>
+					<Layer level="BORDER" textureSubLevel="2">
+						<Texture parentKey="TopLeft">
+							<Size y="64"/>
+							<Anchors><Anchor point="TOPLEFT" /></Anchors>
+						</Texture>
+						<Texture parentKey="TopRight">
+							<Size y="64"/>
+							<Anchors><Anchor point="TOPRIGHT" /></Anchors>
+						</Texture>
+						<Texture parentKey="BottomLeft">
+							<Size y="64"/>
+							<Anchors><Anchor point="BOTTOMLEFT" /></Anchors>
+						</Texture>
+						<Texture parentKey="BottomRight">
+							<Size y="64"/>
+							<Anchors><Anchor point="BOTTOMRIGHT" /></Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+
+			<Frame parentKey="PanelOverlay" frameLevel="3">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.PanelHolder" />
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.PanelHolder" />
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Texture" setAllPoints="true" hidden="true"/>
+					</Layer>
+				</Layers>
+			</Frame>
+
+			<PlayerModel parentKey="PanelClockModel" frameLevel="4" hidden="true">
+				<Size x="230" />
+				<Anchors>
+					<Anchor point="RIGHT" />
+					<Anchor point="TOP" relativeKey="$parent.PanelBackground" />
+					<Anchor point="BOTTOM" relativeKey="$parent.PanelBackground" y="1" />
+				</Anchors>
+				<Scripts>
+					<OnLoad function="AFKFullscreenFrameModel_OnLoad"/>
+					<OnEvent function="AFKFullscreenFrameModel_OnEvent"/>
+					<OnShow function="AFKFullscreenFrame_ClockModel_OnShow"/>
+				</Scripts>
+			</PlayerModel>
+
+			<PlayerModel parentKey="PanelPlayerModel" frameLevel="4" hidden="true">
+				<Size x="230" />
+				<Anchors>
+					<Anchor point="LEFT" />
+					<Anchor point="TOP" relativeKey="$parent.PanelBackground" />
+					<Anchor point="BOTTOM" relativeKey="$parent.PanelBackground" y="1" />
+				</Anchors>
+				<Scripts>
+					<OnLoad function="AFKFullscreenFrameModel_OnLoad"/>
+					<OnEvent function="AFKFullscreenFrameModel_OnEvent"/>
+					<OnShow function="AFKFullscreenFrame_PlayerModel_OnShow"/>
+				</Scripts>
+			</PlayerModel>
+
+			<Frame parentKey="PanelInfos" frameLevel="5" topLevel="true" >
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.InfoBackground" />
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.InfoBackground" />
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString parentKey="Character" inherits="AFKFullscreenInfoFont40">
+							<Anchors>
+								<Anchor point="RIGHT" relativeKey="$parent.$parent.PanelPlayerModel" relativePoint="RIGHT" x="160" y="8" />
+							</Anchors>
+						</FontString>
+						<FontString parentKey="Realm" inherits="AFKFullscreenInfoFont20">
+							<Anchors>
+								<Anchor point="TOPRIGHT" relativeKey="$parent.Character" relativePoint="BOTTOMRIGHT" />
+							</Anchors>
+						</FontString>
+
+						<FontString parentKey="AFKTimer" inherits="AFKFullscreenInfoFont40">
+							<Anchors>
+								<Anchor point="CENTER" y="-13" />
+							</Anchors>
+						</FontString>
+						<FontString parentKey="AFKText" inherits="AFKFullscreenInfoFont20">
+							<Anchors>
+								<Anchor point="BOTTOM" relativeKey="$parent.AFKTimer" relativePoint="TOP" />
+							</Anchors>
+						</FontString>
+
+						<FontString parentKey="Time" inherits="AFKFullscreenInfoFont40" justifyH="LEFT">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.$parent.PanelClockModel" relativePoint="LEFT" x="-160" y="8" />
+							</Anchors>
+						</FontString>
+						<FontString parentKey="Date" inherits="AFKFullscreenInfoFont20">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Time" relativePoint="BOTTOMLEFT" x="5" />
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+	</Frame>
+
+	<Frame name="AFKFullscreenFrame" inherits="AFKFullscreenFrameTemplate" frameStrata="FULLSCREEN_DIALOG" hidden="true">
+		<Scripts>
+			<OnLoad function="AFKFullscreenFrame_OnLoad"/>
+			<OnEvent function="AFKFullscreenFrame_OnEvent"/>
+			<OnUpdate function="AFKFullscreenFrame_OnUpdate"/>
+			<OnShow function="AFKFullscreenFrame_OnShow"/>
+			<OnHide function="AFKFullscreenFrame_OnHide"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="AFKFullscreenDemoFrame" parent="UIParent" frameStrata="TOOLTIP" hidden="true">
+		<Size x="320" y="240" />
+		<Anchors>
+			<Anchor point="RIGHT" relativeTo="UIParent" x="-20"/>
+		</Anchors>
+		<Frames>
+			<Frame name="$parentChild" parentKey="Child" inherits="AFKFullscreenFrameTemplate">
+				<Scripts>
+					<OnUpdate function="AFKFullscreenFrame_OnUpdate"/>
+					<OnHide function="AFKFullscreenFrame_OnHide"/>
+				</Scripts>
+			</Frame>
+			<Frame parentKey="border">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="-11" y="11" />
+					<Anchor point="BOTTOMRIGHT" x="10" y="-10" />
+				</Anchors>
+				<Backdrop edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+					<EdgeSize val="32"/>
+				</Backdrop>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad function="AFKFullscreenDemoFrame_OnLoad"/>
+			<OnShow function="AFKFullscreenDemoFrame_OnShow"/>
+			<!-- OnHide function="AFKFullscreenDemoFrame_OnHide"/-->
+		</Scripts>
+	</Frame>
+
+</Ui>
