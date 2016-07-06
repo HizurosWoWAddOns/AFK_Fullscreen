@@ -194,7 +194,7 @@ local function SetPanelSkin(frame,name,isDemo)
 end
 
 local function CheckAFK(self,PEW)
-	if UnitIsAFK("player") then
+	if UnitIsAFK("player") and not self:IsShown() then
 		self:Show();
 		if PEW then
 			self:Hide();
@@ -460,6 +460,8 @@ function AFKFullscreenFrame_OnEvent(self, event, arg1)
 		end
 	elseif event=="PLAYER_FLAGS_CHANGED" then
 		CheckAFK(self);
+	elseif event=="PLAYER_REGEN_DISABLED" then
+		SetUIVisibility(true);
 	end
 end
 
@@ -485,6 +487,7 @@ function AFKFullscreenFrame_OnLoad(self)
 	self:RegisterEvent("ADDON_LOADED");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("PLAYER_FLAGS_CHANGED");
+	self:RegisterEvent("PLAYER_REGEN_DISABLED");
 end
 
 SLASH_AFKFSW1 = "/afkfsw"
