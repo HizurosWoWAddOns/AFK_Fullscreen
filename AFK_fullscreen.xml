@@ -3,13 +3,6 @@
 
 	<Script file="localizations.lua" />
 
-	<Script file="libs\LibStub\LibStub.lua"/>
-	<Include file="libs\CallbackHandler-1.0\CallbackHandler-1.0.xml"/>
-	<!-- Script file="libs\AceDB-3.0\AceDB-3.0.xml"/-->
-	<Include file="libs\AceGUI-3.0\AceGUI-3.0.xml"/>
-	<Include file="libs\AceConfig-3.0\AceConfig-3.0.xml"/>
-	<Script file="libs\LibDataBroker-1.1\LibDataBroker-1.1.lua"/>
-	<Script file="libs\LibDBIcon-1.0\LibDBIcon-1.0.lua"/>
 
 	<Script file="AFK_fullscreen.lua" />
 	<Script file="models.lua"/>
