@@ -7,11 +7,11 @@ ns.fullscreenModels = {
 	["Sky7"] = "Model:environments\\stars\\legion_invasionskybox01.m2",
 	["Sky8"] = "Model:environments\\stars\\legionnexus_volcanoskybox01.m2", -- good sky...
 	["Sky9"] = "Model:Environments\\Stars\\LostIsleVocanoSkyBox.M2", -- gray\orange
-}
+};
 
 ns.panelSkins = {
 	--[=[
-	["GarrisonReport"] = {
+	["<SkinName>"] = {
 		"<Background model>",
 		"<Background layer1>",
 		"<Background layer2>",
@@ -76,17 +76,15 @@ ns.panelSkins = {
 		"Show:true;H:24","Show:true;H:24;Y:23"
 	},
 	--]]
-	--[[
-	["Nature1"] = {
+	["Silvermoon Grass"] = {
 		"nil","Texture:Dungeons\\TEXTURES\\SILVERMOONCITY\\BM_SLVRMN_GRASS01;Scale:.546875","nil","nil",
 		"nil","nil",
 		"nil","nil",
-		"Texture:Interface\\vehicles\\UI-Vehicles-Elements-Nature;Coords:0,.6484375,0,1,1,.6484375,1,1;H:24;HTile:true;Y:23","Texture:Interface\\vehicles\\UI-Vehicles-Elements-Nature;Coords:0,.6484375,0,1,1,.6484375,1,1;H:24;HTile:true;Y:23",
+		"nil","nil",
 		"nil","nil",
 		"nil",
-		"Show:true;H:16","Show:true;H:24;Y:23"
+		"Show:true;H:16","Show:false"
 	},
-	--]]
 
 	-- ["?"] = "nil|Texture:World\\Expansion06\\Doodads\\Dungeon\\Doodads\\7NE_NightElf_Curb_Set03_Suramar2;Scale:.2734375|nil|nil|nil|nil|nil|nil|Texture:World\\Expansion02\\Doodads\\Nexus\\NEXUS_DRAGONORB;Coords:0,1,0.2421875,0.4921875;H:64;HTile:true;Y:64;Scale:.375|Texture:World\\Expansion02\\Doodads\\Nexus\\NEXUS_DRAGONORB;Coords:0,1,0.2421875,0.4921875;H:64;HTile:true;Y:64;|nil|nil|nil|Show:false|Show:true;H:16;Y:2",
 
@@ -96,10 +94,7 @@ ns.panelSkins = {
 	-- Dungeons\\TEXTURES\\SILVERMOONCITY\\BM_SLVRMN_GRASS01
 
 	-- ["BlackMarket"] = ""
-};
-
-if ns.version_build>70000000 then
-	ns.panelSkins["Suramar"] = {
+	["Suramar"] = {
 		"nil","Texture:World\\Expansion06\\Doodads\\Dungeon\\Doodads\\7NE_NightElf_Curb_Set03_Suramar2;Scale:.2734375","nil","nil",
 		"nil","nil",
 		"nil","nil",
@@ -107,13 +102,40 @@ if ns.version_build>70000000 then
 		"nil","nil",
 		"nil",
 		"Show:false","Show:true;H:24"
-	};
-end
+	},
 
--- add skins to option panel
-for k,v in pairs(ns.panelSkins)do
-	ns.options.args.select_skin.values[k]=k;
-end
+	["Serpentine Bazaar 1"] = {
+		"nil","Texture:world\\expansion07\\doodads\\serpentine\\8se_serpentine_bazaar_cloth01;Scale:.2","nil","nil",
+		"nil","nil",
+		"nil","nil",
+		"nil","nil",
+		"nil","nil",
+		"nil",
+		"Show:false","Show:true;H:24"
+
+	},
+
+	["Serpentine Bazaar 2"] = {
+		"nil","Texture:world\\expansion07\\doodads\\serpentine\\8se_serpentine_bazaar_cloth01b;Scale:.2","nil","nil",
+		"nil","nil",
+		"nil","nil",
+		"nil","nil",
+		"nil","nil",
+		"nil",
+		"Show:false","Show:true;H:24"
+	},
+
+	["Dalaran Ornament"] = {
+		"nil","Texture:world\\expansion06\\doodads\\dalaran\\dal2_mural;Scale:.25","nil","nil",
+		-- 1024/560
+		"nil","nil",
+		"nil","nil",
+		"nil","nil",
+		"nil","nil",
+		"nil",
+		"Show:false","Show:true;H:24"
+	},
+};
 
 --[=[
 
@@ -141,7 +163,7 @@ LLy - Lower left corner Y position, as a fraction of the image's height from the
 URx - Upper right corner X position, as a fraction of the image's width from the left (number)
 URy - Upper right corner Y position, as a fraction of the image's height from the top (number)
 LRx - Lower right corner X position, as a fraction of the image's width from the left (number)
-LRy - Lower right corner Y position, as a fraction of the image's height from the top (number) 
+LRy - Lower right corner Y position, as a fraction of the image's height from the top (number)
 
 
 	file="Interface\common\search"
@@ -197,7 +219,7 @@ World\EXPANSION01\DOODADS\GENERIC\BLOODELF\BEDS\BE_Bed_01
 World\EXPANSION01\DOODADS\GENERIC\BLOODELF\SHROOMS\GhostlandsShroomTop01
 World\EXPANSION01\DOODADS\GENERIC\BLOODELF\TRANSLOCATOR\BE_LOWERSTEP
 World\EXPANSION01\DOODADS\GENERIC\DRAENEI\Cables\draenei_wire
-World\EXPANSION01\DOODADS\GENERIC\DRAENEI\TEMPESTKEEP\BRIDGE_TRIM_ALPHA 
+World\EXPANSION01\DOODADS\GENERIC\DRAENEI\TEMPESTKEEP\BRIDGE_TRIM_ALPHA
 World\EXPANSION01\DOODADS\HellfirePeninsula\Rocks\hellfirerocks_002
 World\EXPANSION01\DOODADS\HellfirePeninsula\RocksFloating\hellfirerocks_003
 World\EXPANSION01\DOODADS\NETHERSTORM\COLLECTORTOP\NetherstormStream01
@@ -239,7 +261,7 @@ World\expansion04\doodads\Pandaren\Stone_Walls\PA_Wall_EastTemple_TEX_01
 World\expansion04\doodads\Pandaren\Stone_Walls\PA_Wall_EastTemple_TEX_02
 World\expansion04\doodads\Pandaren\WoodPlank02
 World\expansion04\doodads\ThunderIsle\Doodads\LightningUnderTile_Blue
-World\expansion04\doodads\ValleyofFourWinds\JungleRoots\V4W_JungleRoots 
+World\expansion04\doodads\ValleyofFourWinds\JungleRoots\V4W_JungleRoots
 World\expansion04\doodads\ValleyofFourWinds\OrangeTree\VFW_SHAOrangeTree_Trunk
 World\EXPANSION05\DOODADS\Ashran\6HU_Garrison_barracks_wall
 World\EXPANSION05\DOODADS\Ashran\6OR_Garrison_WoodFloor
