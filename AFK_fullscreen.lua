@@ -4,33 +4,27 @@ afkfullscreenDB = {};
 
 -- local variables
 local addon, ns = ...;
-local addonName = "AFK Fullscreen Warning";
 local L = ns.L;
 local media = "Interface\\AddOns\\"..addon.."\\media\\";
 local v,b = GetBuildInfo();
 ns.version_build = tonumber(gsub(v,"%.","")..b); -- vvvbbbbb
-local PlayerPositionFix = ns.version_build < 70000000 and {
-	{0,0.00,-0.08}, -- unknown
-	{0,0.05,-0.10}, -- male
-	{0,0.00,-0.10}, -- female
-} or {
+local PlayerPositionFix = {
 	{0,0.00,-0.08}, -- unknown
 	{0,0.05,-0.10}, -- male
 	{0,0.00,-0.10}, -- female
 };
 local demoKeys, keys = {},{};
 local default = "SimpleBlack";
-local AC = LibStub("AceConfig-3.0");
 local ACD = LibStub("AceConfigDialog-3.0");
-local LDB = LibStub("LibDataBroker-1.1")
-local LDB_Object
-local LDBI = LDB and LibStub("LibDBIcon-1.0", true);
+local LDB_Object,LDB = nil,LibStub("LibDataBroker-1.1");
+local LDBI = LibStub("LibDBIcon-1.0", true);
 
 
 -------------------------------------------------
 -- misc local functions
 -------------------------------------------------
-local function print(...)
+local debugMode = "@project-version@"=="@".."project-version".."@";
+function ns.print(...)
 	local colors,t,c = {"0099ff","00ff00","ff6060","44ffff","ffff00","ff8800","ff44ff","ffffff"},{},1;
 	for i,v in ipairs({...}) do
 		v = tostring(v);
@@ -42,7 +36,13 @@ local function print(...)
 		end
 		tinsert(t,v);
 	end
-	_G.print(unpack(t));
+	print(unpack(t));
+end
+
+function ns.debug(...)
+	if debugMode then
+		ns.print("<debug>",...);
+	end
 end
 
 local function UnpackSkin(obj,isDemo)
@@ -78,7 +78,7 @@ local function SetPanelSkin(frame,name,isDemo)
 		local skin,show = UnpackSkin(ns.panelSkins[name],isDemo);
 		for i,v in pairs(skin)do
 			if v[2]~=false then
-				obj, v = unpack(v);
+				local obj, v = unpack(v);
 				show=false;
 				if i~="BackgroundModel" and (i:find("^Background") or i:find("Border")) then
 					if v.Texture or v.Atlas then
@@ -187,8 +187,6 @@ local function SetPanelSkin(frame,name,isDemo)
 				v[1]:Hide();
 			end
 		end
-
-
 	end
 end
 
@@ -213,27 +211,18 @@ local function CheckAFK(self,PEW)
 end
 
 local function DataBrokerInit()
-	LDB_Object = LDB:NewDataObject(addonName,{
+	LDB_Object = LDB:NewDataObject(addon,{
 		type	= "launcher",
 		icon	= "Interface\\Icons\\Ability_Foundryraid_Dormant",
-		label	= addonName,
-		text	= addonName,
+		label	= L[addon],
+		text	= L[addon],
 		OnTooltipShow = function(tt)
 			local line = "|cff69ccf0%s|r |cffffffff|||r |cfff0a55f%s|r";
-			tt:AddLine(addonName);
-			--tt:AddLine(line:format(L["Left click"],L["to toggle AKF mode"]));
+			tt:AddLine(L[addon]);
 			tt:AddLine(line:format(L["Click"],L["to open config"]));
 		end,
 		OnClick = function(_, button)
-			--if (button=="LeftButton") then
-			--else
-				if ACD.OpenFrames[addonName]~=nil then
-					ACD:Close(addonName);
-				else
-					ACD:Open(addonName);
-					ACD.OpenFrames[addonName]:SetStatusText(GAME_VERSION_LABEL..": "..GetAddOnMetadata(addon,"Version"));
-				end
-			--end
+			ns.toggleOptions();
 		end
 	});
 
@@ -241,7 +230,7 @@ local function DataBrokerInit()
 		if afkfullscreenDB.Minimap==nil then
 			afkfullscreenDB.Minimap={hide=false};
 		end
-		LDBI:Register(addonName, LDB_Object, afkfullscreenDB.Minimap);
+		LDBI:Register(addon, LDB_Object, afkfullscreenDB.Minimap);
 	end
 end
 
@@ -297,7 +286,8 @@ end
 AFKFullscreenFlasherMixin = {};
 function AFKFullscreenFlasherMixin:OnShow()
 	self.style="pulse";
-	self.AnimTexture1:SetTexture(media.."pulse_orange");
+	self.AnimTexture1:SetTexture(media.."fullscreen-"..afkfullscreenDB.fullscreenwarning_texture);
+	self.AnimTexture1:SetVertexColor(unpack(afkfullscreenDB.fullscreenwarning_color));
 	self[self.style]:Play();
 end
 
@@ -332,7 +322,7 @@ function AFKFullscreenDemoFrameMixin:OnLoad()
 end
 
 function AFKFullscreenDemoFrameMixin:OnShow()
-	SetPanelSkin(self.Child,afkfullscreenDB.skin,true);
+	SetPanelSkin(self.Child,afkfullscreenDB.infopanel_skin,true);
 
 	self.Child.PanelInfos.Character:Hide();
 	self.Child.PanelInfos.Realm:Hide();
@@ -355,7 +345,6 @@ function AFKFullscreenDemoFrameMixin:OnHide()
 	self.Child.PanelInfos.AFKTimer:SetText("");
 	self.Child.FullScreenWarning:Hide();
 	self.Child.PanelPlayerModel:Hide();
-	--self.Child.BigPlayerModel:Hide();
 	self.Child.PanelClockModel:Hide();
 	self.Child.PanelBackgroundModel:Hide();
 end
@@ -412,11 +401,10 @@ function AFKFullscreenFrameMixin:OnShow()
 	end
 end
 
-function AFKFullscreenDemoFrameMixin:OnHide()
+function AFKFullscreenFrameMixin:OnHide()
 	self.PanelInfos.AFKTimer:SetText("");
 	self.FullScreenWarning:Hide();
 	self.PanelPlayerModel:Hide();
-	--self.BigPlayerModel:Hide();
 	self.PanelClockModel:Hide();
 	self.PanelBackgroundModel:Hide();
 end
@@ -445,232 +433,33 @@ end
 
 function AFKFullscreenFrameMixin:OnEvent(event, arg1)
 	if event=="ADDON_LOADED" and arg1==addon then
-		print("AddOn loaded...");
+		ns.dbIntegrityCheck(); -- defined in options.lua
 
-		if afkfullscreenDB==nil then
-			afkfullscreenDB = {};
-		end
+		ns.registerOptions(); -- defined in options.lua
 
-		for i,v in pairs({
-			hide_ui = true,
-			show_fullscreenwarning = true,
-			skin = "Etherreal"
-		})do
-			if afkfullscreenDB[i] == nil then
-				afkfullscreenDB[i] = v;
-			end
-		end
-
-		AC:RegisterOptionsTable(addonName, ns.options);
-		ACD:AddToBlizOptions(addonName);
-		--ACD.OpenFrames[addonName]:SetStatusText(GAME_VERSION_LABEL..": "..GetAddOnMetadata(addon,"Version"));
+		ns.registerSlashCommand();
 
 		DataBrokerInit();
 
 		self.PanelInfos.Character:SetText(UnitName("player"));
 		self.PanelInfos.Realm:SetText(GetRealmName());
+
+		if afkfullscreenDB.show_addonloaded then
+			ns.print(L["AddOn loaded..."]);
+		end
 	elseif event=="PLAYER_ENTERING_WORLD" then
-		C_Timer.After(0.1,function()
+		C_Timer.After(0.314159,function()
 			CheckAFK(self,true);
 		end);
 		if not IsInOptionPanel then
 			IsInOptionPanel = true;
 		end
 	elseif event=="PLAYER_FLAGS_CHANGED" then
-		CheckAFK(self);
+		C_Timer.After(0.314159,function()
+			CheckAFK(self);
+		end);
 	elseif event=="PLAYER_REGEN_DISABLED" then
-		SetUIVisibility(true);
+		securecall("SetUIVisibility",true);
 	end
 end
-
-
-SLASH_AFKFSW1 = "/afkfsw"
-SlashCmdList["AFKFSW"] = function(msg)
-	--msg = strtrim(msg or "")
-	--local cmd, params = strsplit(' ', msg, 2);
-	if ACD.OpenFrames[addonName]~=nil then
-		ACD:Close(addonName);
-	else
-		ACD:Open(addonName);
-		ACD.OpenFrames[addonName]:SetStatusText(GAME_VERSION_LABEL..": "..GetAddOnMetadata(addon,"Version"));
-	end
-end
-
--------------------------------------------------
--- Option panel
--------------------------------------------------
-ns.options = {
-	type = "group",
-	name = addonName,
-	--childGroups = "tab",
-	args = {
-		minimap = {
-			type = "toggle",
-			order = 1,
-			name = L["Minimap button"],
-			desc = L["Show afk fullscreen as minimap button"],
-			get = function() return not afkfullscreenDB.Minimap.hide; end,
-			set = function(_,v) afkfullscreenDB.Minimap.hide = not v; if v then LDBI:Show(addonName); else LDBI:Hide(addonName); end end,
-		},
-
-		header1 = {
-			type = "header",
-			order = 2,
-			name = L["Fullscreen options"]
-		},
-
-		hide_ui = {
-			type = "toggle",
-			order = 3,
-			name = L["Hide UI"],
-			desc = L["Hide user interface on AFK"],
-			get = function() return afkfullscreenDB.hide_ui; end,
-			set = function(_,v) afkfullscreenDB.hide_ui=v; end
-		},
-
-		fullscreenwarning = {
-			type = "toggle",
-			order = 4,
-			name = L["Show full screen warning"],
-			desc = L["Show orange full screen warning"],
-			get = function() return afkfullscreenDB.show_fullscreenwarning; end,
-			set = function(_,v) afkfullscreenDB.show_fullscreenwarning=v; end
-		},
-
-		--[[
-		header2 = {
-			type = "header",
-			order = 5,
-			name = L["Info panel options"]
-		},
-
-		show_playermodel = {
-			type = "toggle",
-			order = 6,
-			name = L["Show realm"],
-			get = function() return afkfullscreenDB.show_playermodel; end,
-			set = function(_,v) afkfullscreenDB.show_playermodel=v; end,
-			hidden=true
-		},
-
-		show_playername = {
-			type = "toggle",
-			order = 7,
-			name = L["Show realm"],
-			get = function() return afkfullscreenDB.show_playername; end,
-			set = function(_,v) afkfullscreenDB.show_playername=v; end,
-			hidden=true
-		},
-
-		show_realm = {
-			type = "toggle",
-			order = 8,
-			name = L["Show realm"],
-			get = function() return afkfullscreenDB.show_realm; end,
-			set = function(_,v) afkfullscreenDB.show_realm=v; end
-		},
-
-		show_clockmodel = {
-			type = "toggle",
-			order = 9,
-			name = L["Show realm"],
-			get = function() return afkfullscreenDB.show_clockmodel; end,
-			set = function(_,v) afkfullscreenDB.show_clockmodel=v; end,
-			hidden=true
-		},
-
-		show_time = {
-			type = "toggle",
-			order = 10,
-			name = L["Show realm"],
-			get = function() return afkfullscreenDB.show_time; end,
-			set = function(_,v) afkfullscreenDB.show_time=v; end,
-			hidden=true
-		},
-
-		show_date = {
-			type = "toggle",
-			order = 11,
-			name = L["Show date"],
-			get = function() return afkfullscreenDB.show_date; end,
-			set = function(_,v) afkfullscreenDB.show_date=v; end
-		},
-		--]]
-
-		header3 = {
-			type = "header",
-			order = 12,
-			name = L["Info panel skins"]
-		},
-
-		select_skin = {
-			type = "select",
-			order = 13,
-			name = L["Select a skin"],
-			values = {},
-			get = function() return afkfullscreenDB.skin; end,
-			set = function(_,v)
-				afkfullscreenDB.skin=v;
-				if AFKFullscreenDemoFrame:IsShown() then
-					AFKFullscreenDemoFrame:Hide();
-					C_Timer.After(0.2,function()
-						AFKFullscreenDemoFrame:Show();
-					end);
-				end
-			end
-		},
-
-		show_demo = {
-			type = "execute",
-			order = 14,
-			name = L["Show demo frame"],
-			desc = L["Display a little demo frame to show a selected skin"],
-			func = function()
-				AFKFullscreenDemoFrame:SetShown(not AFKFullscreenDemoFrame:IsShown());
-			end
-		},
-
-		header4 = {
-			type = "header",
-			order = 15,
-			name = L["Alert sound options"]
-		},
-
-		info = {
-			type = "description",
-			order = 16,
-			name = "|cff999999Options for afk alert sound coming soon...|r",
-			fontSize = "large"
-		},
-
-		enabled = {
-			type = "toggle",
-			order = 17,
-			name = L["Enable alert sound"],
-			desc = L["..."],
-			get = function() return afkfullscreenDB.sound_enabled; end,
-			set = function(_,v) afkfullscreenDB.sound_enabled = v; end,
-			hidden = true
-		},
-
-		output_type = {
-			type = "select",
-			order = 18,
-			name = L["Select output channel"],
-			--desc = L[""],
-			values = {},
-			hidden = true
-		},
-
-		sound_file = {
-			type = "select",
-			order = 19,
-			name = L["Select alert sound"],
-			--desc = L[""],
-			values = {},
-			hidden = true
-		}
-	}
-};
-
 
