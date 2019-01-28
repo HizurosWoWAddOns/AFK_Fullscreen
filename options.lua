@@ -171,7 +171,7 @@ local options = {
 			type = "group", order = 60, inline = true,
 			name = L["Info panel skins"],
 			args = {
-				select_skin = {
+				infopanel_skin = {
 					type = "select", order = 1,
 					name = L["Select a skin"],
 					values = listSkins,
@@ -195,7 +195,7 @@ local options = {
 		},
 
 		sound = {
-			type = "group", order = 100, inline = true, hidden = true,
+			type = "group", order = 100, inline = true, hidden = true, -- coming soon
 			name = L["Alert sound options"],
 			args = {
 				sound_enabled = {
@@ -224,12 +224,10 @@ function ns.dbIntegrityCheck()
 	end
 
 	-- migration
-
-	--if afkfullscreenDB.skin~=nil then
-	--	afkfullscreenDB.infopanel_preset = afkfullscreenDB.skin;
-	--	afkfullscreenDB.skin = nil;
-	--end
-
+	if afkfullscreenDB.select_skin~=nil then
+		afkfullscreenDB.infopanel_skin = afkfullscreenDB.select_skin;
+		afkfullscreenDB.select_skin = nil;
+	end
 	-- /migration
 
 	for i,v in pairs(dbDefaults)do
@@ -249,10 +247,8 @@ function ns.toggleOptions()
 end
 
 function ns.registerOptions()
-	--ns.updatePresets()
 	AC:RegisterOptionsTable(addon, options);
 	ACD:AddToBlizOptions(addon);
-	--ACD.OpenFrames[addon]:SetStatusText(GAME_VERSION_LABEL..": "..GetAddOnMetadata(addon,"Version"));
 end
 
 function ns.registerSlashCommand()
