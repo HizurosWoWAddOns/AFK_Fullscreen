@@ -427,7 +427,7 @@ function AFKFullscreenFrameMixin:OnShow()
 
 	self:SetScale(UIParent:GetEffectiveScale());
 
-	SetPanelSkin(self,afkfullscreenDB.skin);
+	SetPanelSkin(self,afkfullscreenDB.infopanel_skin);
 
 	self.FadeIn:Play();
 
