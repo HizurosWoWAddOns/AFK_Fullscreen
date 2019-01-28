@@ -5,7 +5,7 @@ afkfullscreenDB = {};
 -- local variables
 local addon, ns = ...;
 local L = ns.L;
-local media = "Interface\\AddOns\\"..addon.."\\media\\";
+local media,ticker,demoticker = "Interface\\AddOns\\"..addon.."\\media\\";
 local v,b = GetBuildInfo();
 ns.version_build = tonumber(gsub(v,"%.","")..b); -- vvvbbbbb
 local PlayerPositionFix = {
@@ -190,6 +190,26 @@ local function SetPanelSkin(frame,name,isDemo)
 	end
 end
 
+local function TickerFunc(_,demoFrame)
+	local self = demoFrame or AFKFullscreenFrame
+	if self:IsShown() then
+		self.PanelInfos.AFKText:SetText(L["AFK since"]);
+		self.PanelInfos.AFKTimer:SetText(SecondsToTime(time()-self.timer));
+		self.PanelInfos.Date:SetText(_G["WEEKDAY_"..date("%A"):upper()]..", "..date("%Y-%m-%d"));
+		self.PanelInfos.Time:SetText(date("%H:%M:%S"));
+	end
+end
+
+local function DemoTickerFunc()
+	local standalonePanel = ACD.OpenFrames and ACD.OpenFrames[addon] and ACD.OpenFrames[addon].frame:IsVisible();
+	local blizzPanel = ACD.BlizOptions and ACD.BlizOptions[addon] and ACD.BlizOptions[addon][addon].frame:IsVisible();
+	if not (standalonePanel or blizzPanel) then
+		AFKFullscreenDemoFrame:Hide();  -- hide demo frame after closed option panel
+	else
+		TickerFunc(nil,AFKFullscreenDemoFrame.Child);
+	end
+end
+
 local function CheckAFK(self,PEW)
 	if UnitIsAFK("player") and not self:IsShown() then
 		self:Show();
@@ -339,6 +359,12 @@ function AFKFullscreenDemoFrameMixin:OnShow()
 	if self.Child.PanelBackgroundModel.SetToShow then
 		self.Child.PanelBackgroundModel:Show();
 	end
+
+	if not demoticker then
+		demoticker = C_Timer.NewTicker(1,DemoTickerFunc);
+		demoticker.startAFK = time();
+		DemoTickerFunc();
+	end
 end
 
 function AFKFullscreenDemoFrameMixin:OnHide()
@@ -347,7 +373,12 @@ function AFKFullscreenDemoFrameMixin:OnHide()
 	self.Child.PanelPlayerModel:Hide();
 	self.Child.PanelClockModel:Hide();
 	self.Child.PanelBackgroundModel:Hide();
+	if demoticker then
+		demoticker:Cancel();
+		demoticker = nil;
+	end
 end
+
 
 -------------------------------------------------
 -- Main frame functions
@@ -393,9 +424,6 @@ function AFKFullscreenFrameMixin:OnShow()
 	self.PanelInfos.Realm:Show();
 	self.PanelInfos.Date:Show();
 
-	if self.BigPlayerModel.SetToShow then
-		self.BigPlayerModel:Show();
-	end
 	if self.PanelBackgroundModel.SetToShow then
 		self.PanelBackgroundModel:Show();
 	end
@@ -407,27 +435,9 @@ function AFKFullscreenFrameMixin:OnHide()
 	self.PanelPlayerModel:Hide();
 	self.PanelClockModel:Hide();
 	self.PanelBackgroundModel:Hide();
-end
-
-function AFKFullscreenDemoFrameMixin:OnUpdate(elapse)
-	if self:IsShown() then
-		self.elapse = self.elapse+elapse;
-		if (self.elapse>=1) then
-			self.elapse=0;
-			self.PanelInfos.AFKText:SetText(L["AFK since"]);
-			self.PanelInfos.AFKTimer:SetText(SecondsToTime(GetTime()-self.timer));
-			self.PanelInfos.Date:SetText(date("%A, %Y-%m-%d"));
-			self.PanelInfos.Time:SetText(date("%H:%M:%S"));
-			if AFKFullscreenDemoFrame.Child==self then
-				local Lib = LibStub("AceConfigDialog-3.0");
-				--XYYD=Lib
-				--print(tostring(Lib.OpenFrames[addonName]))
-				if not Lib.BlizOptions[addonName][addonName].frame:IsVisible() then
-				--if Lib.OpenFrames[addonName]==nil then
-					AFKFullscreenDemoFrame:Hide();
-				end
-			end
-		end
+	if ticker then
+		ticker:Cancel();
+		ticker = nil;
 	end
 end
 

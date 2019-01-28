@@ -3,6 +3,7 @@
 
 	<Script file="localizations.lua" />
 	<Script file="AFK_fullscreen.lua" />
+	<Script file="options.lua"/>
 	<Script file="skins.lua"/>
 
 	<Texture name="AFKFullscreenInfoDecoTpl" file="Interface\DialogFrame\UI-DialogBox-Background-Dark" virtual="true">
@@ -335,7 +336,6 @@
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnEvent method="OnEvent"/>
-			<OnUpdate method="OnUpdate"/>
 			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
 		</Scripts>
