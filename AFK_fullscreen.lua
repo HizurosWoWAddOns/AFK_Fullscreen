@@ -211,7 +211,8 @@ local function DemoTickerFunc()
 end
 
 local function CheckAFK(self,PEW)
-	if UnitIsAFK("player") and not self:IsShown() then
+	local isAFK = UnitIsAFK("player");
+	if isAFK and not self:IsShown() then
 		self:Show();
 		if PEW then
 			self:Hide();
@@ -220,12 +221,12 @@ local function CheckAFK(self,PEW)
 			end);
 		end
 		if not InCombatLockdown() and afkfullscreenDB.hide_ui then
-			SetUIVisibility(false)
+			securecall("SetUIVisibility",false); -- hide ui
 		end
-	elseif self:IsShown() then
+	elseif not isAFK and self:IsShown() then
 		self.FadeOut:Play();
 		if not UIParent:IsVisible() then
-			SetUIVisibility(true)
+			securecall("SetUIVisibility",true); -- unhide ui
 		end
 	end
 end
@@ -354,7 +355,7 @@ function AFKFullscreenDemoFrameMixin:OnShow()
 		self.Child.FullScreenWarning:Show();
 	end
 
-	self.Child.timer=GetTime()-1;
+	self.Child.timer=time()-1;
 	self.Child.elapse=1;
 	if self.Child.PanelBackgroundModel.SetToShow then
 		self.Child.PanelBackgroundModel:Show();
@@ -411,21 +412,48 @@ function AFKFullscreenFrameMixin:OnLoad()
 end
 
 function AFKFullscreenFrameMixin:OnShow()
-	self:SetScale(UIParent:GetEffectiveScale());
-	SetPanelSkin(self,afkfullscreenDB.skin);
-	self.FadeIn:Play();
-	if afkfullscreenDB.show_fullscreenwarning then
-		self.FullScreenWarning:Show();
+	local pos,ph = afkfullscreenDB.infopanel_position,AFKFullscreenFrame.PanelHolder;
+	ph:ClearAllPoints();
+	if pos=="top" then
+		ph:SetPoint("TOPLEFT");
+		ph:SetPoint("TOPRIGHT");
+	elseif pos=="bottom" then
+		ph:SetPoint("BOTTOMLEFT");
+		ph:SetPoint("BOTTOMRIGHT");
+	else -- middle
+		ph:SetPoint("LEFT");
+		ph:SetPoint("RIGHT");
 	end
-	self.timer=GetTime()-1;
+
+	self:SetScale(UIParent:GetEffectiveScale());
+
+	SetPanelSkin(self,afkfullscreenDB.skin);
+
+	self.FadeIn:Play();
+
+	self.FullScreenWarning:SetShown(afkfullscreenDB.show_fullscreenwarning);
+
+	self.timer=time()-1;
 	self.elapse=1;
 	self.PanelPlayerModel:Show();
 	self.PanelClockModel:Show();
 	self.PanelInfos.Realm:Show();
 	self.PanelInfos.Date:Show();
 
-	if self.PanelBackgroundModel.SetToShow then
-		self.PanelBackgroundModel:Show();
+	self.PanelPlayerModel:SetShown(afkfullscreenDB.infopanel_playermodel);
+	self.PanelClockModel:SetShown(afkfullscreenDB.infopanel_clockmodel);
+
+	self.PanelInfos.Character:SetShown(afkfullscreenDB.infopanel_playernamerealm);
+	self.PanelInfos.Realm:SetShown(afkfullscreenDB.infopanel_playernamerealm);
+
+	self.PanelInfos.Time:SetShown(afkfullscreenDB.infopanel_timedate);
+	self.PanelInfos.Date:SetShown(afkfullscreenDB.infopanel_timedate);
+
+	self.PanelBackgroundModel:SetShown(self.PanelBackgroundModel.SetToShow);
+
+	if not ticker then
+		ticker = C_Timer.NewTicker(1,TickerFunc);
+		TickerFunc(ticker);
 	end
 end
 

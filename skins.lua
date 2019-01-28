@@ -1,14 +1,6 @@
 
 local addon, ns = ...;
 
-ns.fullscreenModels = {
-	["Sky3"] = "Model:ENVIRONMENTS\\STARS\\DalaranSkyBox.m2",
-	["Sky6"] = "Model:environments\\stars\\general_legionskybox01.m2",
-	["Sky7"] = "Model:environments\\stars\\legion_invasionskybox01.m2",
-	["Sky8"] = "Model:environments\\stars\\legionnexus_volcanoskybox01.m2", -- good sky...
-	["Sky9"] = "Model:Environments\\Stars\\LostIsleVocanoSkyBox.M2", -- gray\orange
-};
-
 ns.panelSkins = {
 	--[=[
 	["<SkinName>"] = {
@@ -65,6 +57,7 @@ ns.panelSkins = {
 		"nil",
 		"Show:false","Show:true;H:24"
 	},
+--@do-not-package@
 	--[[
 	["Books1"] = {
 		"nil","Texture:World\\ENVIRONMENT\\DOODAD\\DALARAN\\INSCRIPTIONSHOP\\INSCRIPTIONBOOKSHELVES01;Scale:.546875","nil","nil",
@@ -76,6 +69,7 @@ ns.panelSkins = {
 		"Show:true;H:24","Show:true;H:24;Y:23"
 	},
 	--]]
+--@end-do-not-package@
 	["Silvermoon Grass"] = {
 		"nil","Texture:Dungeons\\TEXTURES\\SILVERMOONCITY\\BM_SLVRMN_GRASS01;Scale:.546875","nil","nil",
 		"nil","nil",
@@ -85,7 +79,7 @@ ns.panelSkins = {
 		"nil",
 		"Show:true;H:16","Show:false"
 	},
-
+--@do-not-package@
 	-- ["?"] = "nil|Texture:World\\Expansion06\\Doodads\\Dungeon\\Doodads\\7NE_NightElf_Curb_Set03_Suramar2;Scale:.2734375|nil|nil|nil|nil|nil|nil|Texture:World\\Expansion02\\Doodads\\Nexus\\NEXUS_DRAGONORB;Coords:0,1,0.2421875,0.4921875;H:64;HTile:true;Y:64;Scale:.375|Texture:World\\Expansion02\\Doodads\\Nexus\\NEXUS_DRAGONORB;Coords:0,1,0.2421875,0.4921875;H:64;HTile:true;Y:64;|nil|nil|nil|Show:false|Show:true;H:16;Y:2",
 
 
@@ -94,6 +88,7 @@ ns.panelSkins = {
 	-- Dungeons\\TEXTURES\\SILVERMOONCITY\\BM_SLVRMN_GRASS01
 
 	-- ["BlackMarket"] = ""
+--@end-do-not-package@
 	["Suramar"] = {
 		"nil","Texture:World\\Expansion06\\Doodads\\Dungeon\\Doodads\\7NE_NightElf_Curb_Set03_Suramar2;Scale:.2734375","nil","nil",
 		"nil","nil",
@@ -136,7 +131,7 @@ ns.panelSkins = {
 		"Show:false","Show:true;H:24"
 	},
 };
-
+--@do-not-package@
 --[=[
 
 	xoffset:yoffset:dimx:dimy:coordx1:coordx2:coordy1:coordy2
@@ -351,3 +346,4 @@ dungeons
 \TEXTURES\WOOD\ELWYNNPILLARWOOD05
 
 --]=]
+--@end-do-not-package@

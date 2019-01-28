@@ -1,6 +1,6 @@
 
 local addon,ns = ...;
-local L,C=ns.L,ns.C;
+local L=ns.L;
 local AC = LibStub("AceConfig-3.0");
 local ACD = LibStub("AceConfigDialog-3.0");
 local LDBI = LibStub("LibDBIcon-1.0", true);
