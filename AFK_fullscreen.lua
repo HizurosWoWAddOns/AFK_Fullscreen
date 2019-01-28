@@ -307,13 +307,33 @@ end
 AFKFullscreenFlasherMixin = {};
 function AFKFullscreenFlasherMixin:OnShow()
 	self.style="pulse";
-	self.AnimTexture1:SetTexture(media.."fullscreen-"..afkfullscreenDB.fullscreenwarning_texture);
-	self.AnimTexture1:SetVertexColor(unpack(afkfullscreenDB.fullscreenwarning_color));
+	if afkfullscreenDB.fullscreenwarning_texture~="none" then
+		self.AnimTexture1:SetTexture(media.."fullscreen-"..afkfullscreenDB.fullscreenwarning_texture);
+		self.AnimTexture1:SetVertexColor(unpack(afkfullscreenDB.fullscreenwarning_color));
+		self.AnimTexture1:Show();
+	end
+	if afkfullscreenDB.fullscreenwarning_factionlogo then
+		local faction,w,size = UnitFactionGroup("player");
+		if self:GetParent()==AFKFullscreenFrame then
+			w,size = UIParent:GetSize();
+		else
+			w,size = AFKFullscreenDemoFrame:GetSize();
+		end
+		if w<size then
+			size = w; -- for player with vertical screens ;-)
+		end
+		self.AnimTexture2:SetTexture(media.."fullscreen-"..faction);
+		self.AnimTexture2:SetVertexColor(unpack(afkfullscreenDB.fullscreenwarning_color));
+		self.AnimTexture2:SetSize(size,size);
+		self.AnimTexture2:Show();
+	end
 	self[self.style]:Play();
 end
 
 function AFKFullscreenFlasherMixin:OnHide()
 	self[self.style]:Stop();
+	self.AnimTexture1:Hide();
+	self.AnimTexture2:Hide();
 end
 
 
@@ -349,6 +369,9 @@ function AFKFullscreenDemoFrameMixin:OnShow()
 	self.Child.PanelInfos.Realm:Hide();
 	self.Child.PanelInfos.Time:Hide();
 	self.Child.PanelInfos.Date:Hide();
+
+	self.Child.PanelInfos.AFKText:SetTextColor(unpack(afkfullscreenDB.infopanel_textcolor));
+	self.Child.PanelInfos.AFKTimer:SetTextColor(unpack(afkfullscreenDB.infopanel_textcolor));
 
 	self.Child.FadeIn:Play();
 	if afkfullscreenDB.show_fullscreenwarning then
@@ -387,7 +410,6 @@ end
 AFKFullscreenFrameMixin = {};
 
 function AFKFullscreenFrameMixin:OnLoad()
-	self:SetScale(UIParent:GetEffectiveScale());
 	keys = {
 		{"BackgroundModel",   self.PanelBackgroundModel},
 		{"BackgroundLayer1",  self.PanelBackground.Layer1},
@@ -440,6 +462,13 @@ function AFKFullscreenFrameMixin:OnShow()
 	self.PanelInfos.Realm:Show();
 	self.PanelInfos.Date:Show();
 
+	self.PanelInfos.Character:SetTextColor(unpack(afkfullscreenDB.infopanel_textcolor));
+	self.PanelInfos.Realm:SetTextColor(unpack(afkfullscreenDB.infopanel_textcolor));
+	self.PanelInfos.Time:SetTextColor(unpack(afkfullscreenDB.infopanel_textcolor));
+	self.PanelInfos.Date:SetTextColor(unpack(afkfullscreenDB.infopanel_textcolor));
+	self.PanelInfos.AFKText:SetTextColor(unpack(afkfullscreenDB.infopanel_textcolor));
+	self.PanelInfos.AFKTimer:SetTextColor(unpack(afkfullscreenDB.infopanel_textcolor));
+
 	self.PanelPlayerModel:SetShown(afkfullscreenDB.infopanel_playermodel);
 	self.PanelClockModel:SetShown(afkfullscreenDB.infopanel_clockmodel);
 
@@ -485,16 +514,9 @@ function AFKFullscreenFrameMixin:OnEvent(event, arg1)
 		if afkfullscreenDB.show_addonloaded then
 			ns.print(L["AddOn loaded..."]);
 		end
-	elseif event=="PLAYER_ENTERING_WORLD" then
+	elseif event=="PLAYER_ENTERING_WORLD" or event=="PLAYER_FLAGS_CHANGED" then
 		C_Timer.After(0.314159,function()
-			CheckAFK(self,true);
-		end);
-		if not IsInOptionPanel then
-			IsInOptionPanel = true;
-		end
-	elseif event=="PLAYER_FLAGS_CHANGED" then
-		C_Timer.After(0.314159,function()
-			CheckAFK(self);
+			CheckAFK(self,event=="PLAYER_ENTERING_WORLD");
 		end);
 	elseif event=="PLAYER_REGEN_DISABLED" then
 		securecall("SetUIVisibility",true);

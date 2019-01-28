@@ -57,19 +57,6 @@ ns.panelSkins = {
 		"nil",
 		"Show:false","Show:true;H:24"
 	},
---@do-not-package@
-	--[[
-	["Books1"] = {
-		"nil","Texture:World\\ENVIRONMENT\\DOODAD\\DALARAN\\INSCRIPTIONSHOP\\INSCRIPTIONBOOKSHELVES01;Scale:.546875","nil","nil",
-		"nil","nil",
-		"nil","nil",
-		"Texture:Interface\\vehicles\\UI-Vehicles-Elements-Nature;Coords:0,1,.6484375,1;H:24;HTile:true;Y:23","Texture:Interface\\vehicles\\UI-Vehicles-Elements-Nature;Coords:0,1,.6484375,1;H:24;HTile:true;Y:23",
-		"nil","nil",
-		"nil",
-		"Show:true;H:24","Show:true;H:24;Y:23"
-	},
-	--]]
---@end-do-not-package@
 	["Silvermoon Grass"] = {
 		"nil","Texture:Dungeons\\TEXTURES\\SILVERMOONCITY\\BM_SLVRMN_GRASS01;Scale:.546875","nil","nil",
 		"nil","nil",
@@ -79,16 +66,6 @@ ns.panelSkins = {
 		"nil",
 		"Show:true;H:16","Show:false"
 	},
---@do-not-package@
-	-- ["?"] = "nil|Texture:World\\Expansion06\\Doodads\\Dungeon\\Doodads\\7NE_NightElf_Curb_Set03_Suramar2;Scale:.2734375|nil|nil|nil|nil|nil|nil|Texture:World\\Expansion02\\Doodads\\Nexus\\NEXUS_DRAGONORB;Coords:0,1,0.2421875,0.4921875;H:64;HTile:true;Y:64;Scale:.375|Texture:World\\Expansion02\\Doodads\\Nexus\\NEXUS_DRAGONORB;Coords:0,1,0.2421875,0.4921875;H:64;HTile:true;Y:64;|nil|nil|nil|Show:false|Show:true;H:16;Y:2",
-
-
-	-- Interface\\vehicles\\UI-Vehicles-Elements-Nature
-	-- Dungeons\\TEXTURES\\FLOOR\\KG_KZN_TRANSITION_FLOOR
-	-- Dungeons\\TEXTURES\\SILVERMOONCITY\\BM_SLVRMN_GRASS01
-
-	-- ["BlackMarket"] = ""
---@end-do-not-package@
 	["Suramar"] = {
 		"nil","Texture:World\\Expansion06\\Doodads\\Dungeon\\Doodads\\7NE_NightElf_Curb_Set03_Suramar2;Scale:.2734375","nil","nil",
 		"nil","nil",
@@ -133,6 +110,30 @@ ns.panelSkins = {
 };
 --@do-not-package@
 --[=[
+	-- faction warboards
+	-- interface/QuestionFrame/Warboard
+
+	--simple wood
+	-- /VEHICLES/UI-Vehicles-Elements-Nature
+
+	["Books1"] = {
+		"nil","Texture:World\\ENVIRONMENT\\DOODAD\\DALARAN\\INSCRIPTIONSHOP\\INSCRIPTIONBOOKSHELVES01;Scale:.546875","nil","nil",
+		"nil","nil",
+		"nil","nil",
+		"Texture:Interface\\vehicles\\UI-Vehicles-Elements-Nature;Coords:0,1,.6484375,1;H:24;HTile:true;Y:23","Texture:Interface\\vehicles\\UI-Vehicles-Elements-Nature;Coords:0,1,.6484375,1;H:24;HTile:true;Y:23",
+		"nil","nil",
+		"nil",
+		"Show:true;H:24","Show:true;H:24;Y:23"
+	},
+
+	-- ["?"] = "nil|Texture:World\\Expansion06\\Doodads\\Dungeon\\Doodads\\7NE_NightElf_Curb_Set03_Suramar2;Scale:.2734375|nil|nil|nil|nil|nil|nil|Texture:World\\Expansion02\\Doodads\\Nexus\\NEXUS_DRAGONORB;Coords:0,1,0.2421875,0.4921875;H:64;HTile:true;Y:64;Scale:.375|Texture:World\\Expansion02\\Doodads\\Nexus\\NEXUS_DRAGONORB;Coords:0,1,0.2421875,0.4921875;H:64;HTile:true;Y:64;|nil|nil|nil|Show:false|Show:true;H:16;Y:2",
+
+
+	-- Interface\\vehicles\\UI-Vehicles-Elements-Nature
+	-- Dungeons\\TEXTURES\\FLOOR\\KG_KZN_TRANSITION_FLOOR
+	-- Dungeons\\TEXTURES\\SILVERMOONCITY\\BM_SLVRMN_GRASS01
+
+	-- ["BlackMarket"] = ""
 
 	xoffset:yoffset:dimx:dimy:coordx1:coordx2:coordy1:coordy2
 	256;256;0;166;

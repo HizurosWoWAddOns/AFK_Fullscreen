@@ -77,17 +77,26 @@
 			<Frame parentKey="FullScreenWarning" mixin="AFKFullscreenFlasherMixin" frameLevel="1" setAllPoints="true" hidden="true" >
 				<Layers>
 					<Layer level="BACKGROUND" textureSubLevel="0">
-						<Texture parentKey="AnimTexture1" alphaMode="ADD" alpha="0" setAllPoints="true" />
+						<Texture parentKey="AnimTexture1" alphaMode="ADD" alpha="0" setAllPoints="true" hidden="true" />
+						<Texture parentKey="AnimTexture2" alphaMode="ADD" alpha="0" hidden="true">
+							<Anchors>
+								<Anchor point="CENTER" />
+							</Anchors>
+						</Texture>
 					</Layer>
 				</Layers>
 				<Animations>
 					<AnimationGroup parentKey="pulse" setToFinalAlpha="true" looping="REPEAT">
 						<Alpha childKey="AnimTexture1" duration="0" order="1" fromAlpha="0.3" toAlpha="0.3"/>
+						<Alpha childKey="AnimTexture2" duration="0" order="1" fromAlpha="0.3" toAlpha="0.3"/>
 						<Alpha childKey="AnimTexture1" duration="0.75" order="2" fromAlpha=".3" toAlpha=".8"/>
+						<Alpha childKey="AnimTexture2" duration="0.75" order="2" fromAlpha=".3" toAlpha=".8"/>
 						<Alpha childKey="AnimTexture1" startDelay="1" duration="0.75" order="2" fromAlpha=".8" toAlpha=".3"/>
+						<Alpha childKey="AnimTexture2" startDelay="1" duration="0.75" order="2" fromAlpha=".8" toAlpha=".3"/>
 					</AnimationGroup>
 					<AnimationGroup parentKey="static">
 						<Alpha childKey="AnimTexture1" duration="0" order="1" change="1" fromAlpha="1" toAlpha="1" />
+						<Alpha childKey="AnimTexture2" duration="0" order="1" change="1" fromAlpha="1" toAlpha="1" />
 					</AnimationGroup>
 				</Animations>
 				<Scripts>

@@ -8,6 +8,7 @@ local soundSources = {file=L["File"],lsm="LibSharedMedia"};
 ns.soundChannels = {};
 ns.soundFiles = {customfile=L["Use custom file"]};
 local fullscreen_textures = {
+	["none"] = NONE,
 	["flat"] = L["Flat"],
 	["border1"] = L["Border blizzard like"],
 	["gradient-vertical"] = L["Gradient centered vertical"],
@@ -26,6 +27,7 @@ local dbDefaults = {
 	show_fullscreenwarning = true,
 	fullscreenwarning_color = {1,.5,0,1},
 	fullscreenwarning_texture = "border1",
+	fullscreenwarning_factionlogo = true,
 
 	--[[ infopanel entries ]]
 	infopanel_position = "middle",
@@ -34,6 +36,7 @@ local dbDefaults = {
 	infopanel_playernamerealm = true,
 	infopanel_clockmodel = true,
 	infopanel_timedate = true,
+	infopanel_textcolor = {1.0,0.82,0},
 
 	infopanel_skin = "Etherreal",
 
@@ -59,25 +62,29 @@ local function listSkins(info)
 end
 
 local function optionsFunc(info,...)
-	local key, value = info[#info], ...;
+	local key, value, value2 = info[#info], ...;
 	if key == "minimap" then
 		if value~=nil then
 			afkfullscreenDB.Minimap.hide = not value;
 			LDBI:Refresh(addon);
 		end
 		return not afkfullscreenDB.Minimap.hide;
-	elseif key:match("_color$") then
-		if value~=nil then
-			afkfullscreenDB[key] = {...};
-		else
-			return unpack(afkfullscreenDB[key] or {});
+	elseif value~=nil then
+		if value2~=nil then
+			value = {...}; -- color table
 		end
-	else
-		if value~=nil then
-			afkfullscreenDB[key] = value;
+		afkfullscreenDB[key] = value;
+		if AFKFullscreenDemoFrame:IsShown() then
+			AFKFullscreenDemoFrame:Hide();
+			C_Timer.After(0.2,function()
+				AFKFullscreenDemoFrame:Show();
+			end);
 		end
-		return afkfullscreenDB[key];
+		return;
+	elseif type(afkfullscreenDB[key])=="table" then
+		return unpack(afkfullscreenDB[key]); -- color table
 	end
+	return afkfullscreenDB[key];
 end
 
 local function openSubTree()
@@ -113,28 +120,33 @@ local options = {
 			name = L["Fullscreen options"],
 			args = {
 				hide_ui = {
-					type = "toggle", order = 1, width = "full",
+					type = "toggle", order = 1,
 					name = L["Hide UI"], desc = L["Hide user interface on AFK"]
 				},
 
+				fullscreenwarning_factionlogo = {
+					type = "toggle", order = 2, width = "double",
+					name = L["Faction logo"]
+				},
+
 				show_fullscreenwarning = {
-					type = "toggle", order = 2,
+					type = "toggle", order = 3,
 					name = L["Fullscreen warning"]
 				},
 
 				fullscreenwarning_texture = {
-					type = "select", order = 3, width = "double",
+					type = "select", order = 4, width = "double",
 					name = L["Fullscreen texture"], desc = L["Choose texture for fullscreen warning"],
 					values = fullscreen_textures
 				},
 
 				fullscreenwarning_color = {
-					type = "color", order = 4,
+					type = "color", order = 5,
 					name = L["Color"],
 				},
 
 				fullscreenwarning_color_reset = {
-					type = "execute", order = 5,
+					type = "execute", order = 6,
 					name = L["Reset color"],
 					func = function() afkfullscreenDB.fullscreenwarning_color = dbDefaults.fullscreenwarning_color; end
 				}
@@ -150,20 +162,31 @@ local options = {
 					name = L["Player portrait"]
 				},
 
-				infopanel_playernamerealm = {
+				infopanel_clockmodel = {
 					type = "toggle", order = 2, width = "double",
-					name = L["Player name & realm"]
+					name = L["Clock animation"]
 				},
 
-				infopanel_clockmodel = {
+				infopanel_playernamerealm = {
 					type = "toggle", order = 3,
-					name = L["Clock animation"]
+					name = L["Player name & realm"]
 				},
 
 				infopanel_timedate = {
 					type = "toggle", order = 4, width = "double",
 					name = L["Time & date"]
 				},
+
+				infopanel_textcolor = {
+					type = "color", order = 5,
+					name = L["Text color"]
+				},
+
+				infopanel_resetcolor = {
+					type = "execute", order = 6,
+					name = L["Reset color"],
+					func = function() afkfullscreenDB.infopanel_textcolor = dbDefaults.infopanel_textcolor; end
+				}
 			}
 		},
 
@@ -175,16 +198,6 @@ local options = {
 					type = "select", order = 1,
 					name = L["Select a skin"],
 					values = listSkins,
-					get = function() return afkfullscreenDB.infopanel_skin; end,
-					set = function(_,v)
-						afkfullscreenDB.infopanel_skin=v;
-						if AFKFullscreenDemoFrame:IsShown() then
-							AFKFullscreenDemoFrame:Hide();
-							C_Timer.After(0.2,function()
-								AFKFullscreenDemoFrame:Show();
-							end);
-						end
-					end
 				},
 				infopanel_position = {
 					type = "select", order = 2,
