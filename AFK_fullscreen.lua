@@ -92,7 +92,6 @@ local function SetPanelSkin(frame,name,isDemo)
 
 						obj:SetTexture("Interface\\buttons\\white8x8",false);
 
-
 						obj:SetTexture(v.Texture,true);
 
 						if type(v.Coords)=="string" or type(v.Coords)=="table" then
@@ -247,9 +246,11 @@ local function DataBrokerInit()
 end
 
 -------------------------------------------------
--- panel player model functions
+-- model mixin functions
 -------------------------------------------------
-function AFKFullscreenFrame_PlayerModel_OnShow(self)
+AFKFullscreenModelMixin = {};
+
+function AFKFullscreenModelMixin:PlayerOnShow()
 	self:ClearModel();
 	self:SetUnit("player");
 	self:SetPortraitZoom(0.7);
@@ -258,23 +259,7 @@ function AFKFullscreenFrame_PlayerModel_OnShow(self)
 	self:RefreshCamera();
 end
 
-
--------------------------------------------------
--- big player model functions
--------------------------------------------------
-function AFKFullscreenFrame_BigPlayerModel_OnShow(self)
-	local _,race = UnitRace("player");
-	self:ClearModel();
-	self:SetUnit("player");
-	self:SetFacing(.65);
-	self:RefreshCamera();
-end
-
-
--------------------------------------------------
--- clock model functions
--------------------------------------------------
-function AFKFullscreenFrame_ClockModel_OnShow(self)
+function AFKFullscreenModelMixin:ClockOnShow()
 	self:ClearModel();
 	self:SetModel("spells\\Garrison_Shipment_Pending_State");
 	self:SetPortraitZoom(1);
@@ -287,15 +272,19 @@ function AFKFullscreenFrame_ClockModel_OnShow(self)
 	self:RefreshCamera();
 end
 
-
--------------------------------------------------
--- general model functions
--------------------------------------------------
-function AFKFullscreenFrameModel_OnEvent(self)
+function AFKFullscreenModelMixin:BackgroundOnShow()
 	self:RefreshCamera();
 end
 
-function AFKFullscreenFrameModel_OnLoad(self)
+function AFKFullscreenModelMixin:FullscreenOnShow()
+	self:RefreshCamera();
+end
+
+function AFKFullscreenModelMixin:OnEvent()
+	self:RefreshCamera();
+end
+
+function AFKFullscreenModelMixin:OnLoad()
 	self:RefreshCamera();
 	self:RegisterEvent("UI_SCALE_CHANGED");
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
@@ -303,52 +292,26 @@ end
 
 
 -------------------------------------------------
--- FullScreen flasher functions
+-- flasher mixin functions
 -------------------------------------------------
-function AFKFullscreenFrame_Flasher_OnShow(self)
+AFKFullscreenFlasherMixin = {};
+function AFKFullscreenFlasherMixin:OnShow()
 	self.style="pulse";
 	self.AnimTexture1:SetTexture(media.."pulse_orange");
 	self[self.style]:Play();
 end
 
-function AFKFullscreenFrame_Flasher_OnHide(self)
+function AFKFullscreenFlasherMixin:OnHide()
 	self[self.style]:Stop();
 end
 
 
 -------------------------------------------------
--- Demo frame functions
+-- Demo frame mixin functions
 -------------------------------------------------
-function AFKFullscreenDemoFrame_OnShow(self)
-	SetPanelSkin(self.Child,afkfullscreenDB.skin,true);
+AFKFullscreenDemoFrameMixin = {};
 
-	self.Child.PanelInfos.Character:Hide();
-	self.Child.PanelInfos.Realm:Hide();
-	self.Child.PanelInfos.Time:Hide();
-	self.Child.PanelInfos.Date:Hide();
-
-	self.Child.FadeIn:Play();
-	if afkfullscreenDB.show_fullscreenwarning then
-		self.Child.FullScreenWarning:Show();
-	end
-
-	self.Child.timer=GetTime()-1;
-	self.Child.elapse=1;
-	if self.Child.PanelBackgroundModel.SetToShow then
-		self.Child.PanelBackgroundModel:Show();
-	end
-end
-
-function AFKFullscreenDemoFrame_OnHide(self)
-	self.Child.PanelInfos.AFKTimer:SetText("");
-	self.Child.FullScreenWarning:Hide();
-	self.Child.PanelPlayerModel:Hide();
-	--self.Child.BigPlayerModel:Hide();
-	self.Child.PanelClockModel:Hide();
-	self.Child.PanelBackgroundModel:Hide();
-end
-
-function AFKFullscreenDemoFrame_OnLoad(self)
+function AFKFullscreenDemoFrameMixin:OnLoad()
 	demoKeys = {
 		{"BackgroundModel",   self.Child.PanelBackgroundModel},
 		{"BackgroundLayer1",  self.Child.PanelBackground.Layer1},
@@ -368,11 +331,66 @@ function AFKFullscreenDemoFrame_OnLoad(self)
 	};
 end
 
+function AFKFullscreenDemoFrameMixin:OnShow()
+	SetPanelSkin(self.Child,afkfullscreenDB.skin,true);
+
+	self.Child.PanelInfos.Character:Hide();
+	self.Child.PanelInfos.Realm:Hide();
+	self.Child.PanelInfos.Time:Hide();
+	self.Child.PanelInfos.Date:Hide();
+
+	self.Child.FadeIn:Play();
+	if afkfullscreenDB.show_fullscreenwarning then
+		self.Child.FullScreenWarning:Show();
+	end
+
+	self.Child.timer=GetTime()-1;
+	self.Child.elapse=1;
+	if self.Child.PanelBackgroundModel.SetToShow then
+		self.Child.PanelBackgroundModel:Show();
+	end
+end
+
+function AFKFullscreenDemoFrameMixin:OnHide()
+	self.Child.PanelInfos.AFKTimer:SetText("");
+	self.Child.FullScreenWarning:Hide();
+	self.Child.PanelPlayerModel:Hide();
+	--self.Child.BigPlayerModel:Hide();
+	self.Child.PanelClockModel:Hide();
+	self.Child.PanelBackgroundModel:Hide();
+end
 
 -------------------------------------------------
 -- Main frame functions
 -------------------------------------------------
-function AFKFullscreenFrame_OnShow(self)
+AFKFullscreenFrameMixin = {};
+
+function AFKFullscreenFrameMixin:OnLoad()
+	self:SetScale(UIParent:GetEffectiveScale());
+	keys = {
+		{"BackgroundModel",   self.PanelBackgroundModel},
+		{"BackgroundLayer1",  self.PanelBackground.Layer1},
+		{"BackgroundLayer2",  self.PanelBackground.Layer2},
+		{"BackgroundLayer3",  self.PanelBackground.Layer3},
+		{"BorderTopLeft",     self.PanelBorderEdge.TopLeft},
+		{"BorderTopRight",    self.PanelBorderEdge.TopRight},
+		{"BorderBottomLeft",  self.PanelBorderEdge.BottomLeft},
+		{"BorderBottomRight", self.PanelBorderEdge.BottomRight},
+		{"BorderTop",         self.PanelBorder.Top},
+		{"BorderBottom",      self.PanelBorder.Bottom},
+		{"BorderLeft",        self.PanelBorder.Left},
+		{"BorderRight",       self.PanelBorder.Right},
+		{"Overlay",           self.PanelOverlay.Texture},
+		{"InsetShadow",       {self.PanelShadow.InsetTop,self.PanelShadow.InsetBottom}},
+		{"OutsetShadow",      {self.PanelShadow.OutsetTop,self.PanelShadow.OutsetBottom}}
+	};
+	self:RegisterEvent("ADDON_LOADED");
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+	self:RegisterEvent("PLAYER_FLAGS_CHANGED");
+	self:RegisterEvent("PLAYER_REGEN_DISABLED");
+end
+
+function AFKFullscreenFrameMixin:OnShow()
 	self:SetScale(UIParent:GetEffectiveScale());
 	SetPanelSkin(self,afkfullscreenDB.skin);
 	self.FadeIn:Play();
@@ -394,7 +412,7 @@ function AFKFullscreenFrame_OnShow(self)
 	end
 end
 
-function AFKFullscreenFrame_OnHide(self)
+function AFKFullscreenDemoFrameMixin:OnHide()
 	self.PanelInfos.AFKTimer:SetText("");
 	self.FullScreenWarning:Hide();
 	self.PanelPlayerModel:Hide();
@@ -403,7 +421,7 @@ function AFKFullscreenFrame_OnHide(self)
 	self.PanelBackgroundModel:Hide();
 end
 
-function AFKFullscreenFrame_OnUpdate(self,elapse)
+function AFKFullscreenDemoFrameMixin:OnUpdate(elapse)
 	if self:IsShown() then
 		self.elapse = self.elapse+elapse;
 		if (self.elapse>=1) then
@@ -425,7 +443,7 @@ function AFKFullscreenFrame_OnUpdate(self,elapse)
 	end
 end
 
-function AFKFullscreenFrame_OnEvent(self, event, arg1)
+function AFKFullscreenFrameMixin:OnEvent(event, arg1)
 	if event=="ADDON_LOADED" and arg1==addon then
 		print("AddOn loaded...");
 
@@ -465,30 +483,6 @@ function AFKFullscreenFrame_OnEvent(self, event, arg1)
 	end
 end
 
-function AFKFullscreenFrame_OnLoad(self)
-	self:SetScale(UIParent:GetEffectiveScale());
-	keys = {
-		{"BackgroundModel",   self.PanelBackgroundModel},
-		{"BackgroundLayer1",  self.PanelBackground.Layer1},
-		{"BackgroundLayer2",  self.PanelBackground.Layer2},
-		{"BackgroundLayer3",  self.PanelBackground.Layer3},
-		{"BorderTopLeft",     self.PanelBorderEdge.TopLeft},
-		{"BorderTopRight",    self.PanelBorderEdge.TopRight},
-		{"BorderBottomLeft",  self.PanelBorderEdge.BottomLeft},
-		{"BorderBottomRight", self.PanelBorderEdge.BottomRight},
-		{"BorderTop",         self.PanelBorder.Top},
-		{"BorderBottom",      self.PanelBorder.Bottom},
-		{"BorderLeft",        self.PanelBorder.Left},
-		{"BorderRight",       self.PanelBorder.Right},
-		{"Overlay",           self.PanelOverlay.Texture},
-		{"InsetShadow",       {self.PanelShadow.InsetTop,self.PanelShadow.InsetBottom}},
-		{"OutsetShadow",      {self.PanelShadow.OutsetTop,self.PanelShadow.OutsetBottom}}
-	};
-	self:RegisterEvent("ADDON_LOADED");
-	self:RegisterEvent("PLAYER_ENTERING_WORLD");
-	self:RegisterEvent("PLAYER_FLAGS_CHANGED");
-	self:RegisterEvent("PLAYER_REGEN_DISABLED");
-end
 
 SLASH_AFKFSW1 = "/afkfsw"
 SlashCmdList["AFKFSW"] = function(msg)

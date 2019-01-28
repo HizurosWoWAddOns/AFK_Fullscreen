@@ -2,10 +2,7 @@
 ..\..\FrameXML\UI.xsd">
 
 	<Script file="localizations.lua" />
-
-
 	<Script file="AFK_fullscreen.lua" />
-	<Script file="models.lua"/>
 	<Script file="skins.lua"/>
 
 	<Texture name="AFKFullscreenInfoDecoTpl" file="Interface\DialogFrame\UI-DialogBox-Background-Dark" virtual="true">
@@ -16,34 +13,31 @@
 		</Anchors>
 	</Texture>
 
-	<Font name="AFKFullscreenInfoFont20" font="Fonts\FRIZQT__.TTF" virtual="true">
+	<Font name="AFKFullscreenInfoFont20" inherits="Game20Font" virtual="true">
 		<Shadow>
 			<Offset x="1" y="-1"/>
 			<Color r="0" g="0" b="0"/>
 		</Shadow>
-		<FontHeight val="20"/>
 		<Color r="1.0" g="0.82" b="0"/>
 	</Font>
 
-	<Font name="AFKFullscreenInfoFont30" font="Fonts\FRIZQT__.TTF" virtual="true">
+	<Font name="AFKFullscreenInfoFont30" inherits="Game32Font" virtual="true">
 		<Shadow>
 			<Offset x="1" y="-1"/>
 			<Color r="0" g="0" b="0"/>
 		</Shadow>
-		<FontHeight val="30"/>
 		<Color r="1.0" g="0.82" b="0"/>
 	</Font>
 
-	<Font name="AFKFullscreenInfoFont40" font="Fonts\FRIZQT__.TTF" virtual="true">
+	<Font name="AFKFullscreenInfoFont40" inherits="Game42Font" virtual="true">
 		<Shadow>
 			<Offset x="1" y="-1"/>
 			<Color r="0" g="0" b="0"/>
 		</Shadow>
-		<FontHeight val="40"/>
 		<Color r="1.0" g="0.82" b="0"/>
 	</Font>
 
-	<Frame name="AFKFullscreenFrameTemplate" alpha="0" setAllPoints="true" toplevel="true" virtual="true">
+	<Frame name="AFKFullscreenFrameTemplate" mixin="AFKFullscreenFrameMixin" alpha="0" setAllPoints="true" toplevel="true" virtual="true">
 		<Animations>
 			<AnimationGroup parentKey="FadeIn">
 				<Alpha duration="0.45" order="1" fromAlpha="0" toAlpha="1" />
@@ -71,14 +65,15 @@
 			</AnimationGroup>
 		</Animations>
 		<Frames>
-			<PlayerModel parentKey="FullScreenBGModel" frameLevel="0" setAllPoints="true" hidden="true">
+			<PlayerModel parentKey="FullScreenBGModel" mixin="AFKFullscreenModelMixin" frameLevel="1" setAllPoints="true" hidden="true">
 				<Scripts>
-					<OnLoad function="AFKFullscreenFrameModel_OnLoad"/>
-					<OnEvent function="AFKFullscreenFrameModel_OnEvent"/>
+					<OnLoad method="OnLoad"/>
+					<OnEvent method="OnEvent"/>
+					<OnShow method="FullscreenOnShow"/>
 				</Scripts>
 			</PlayerModel>
 
-			<Frame parentKey="FullScreenWarning" frameLevel="1" setAllPoints="true" hidden="true" >
+			<Frame parentKey="FullScreenWarning" mixin="AFKFullscreenFlasherMixin" frameLevel="1" setAllPoints="true" hidden="true" >
 				<Layers>
 					<Layer level="BACKGROUND" textureSubLevel="0">
 						<Texture parentKey="AnimTexture1" alphaMode="ADD" alpha="0" setAllPoints="true" />
@@ -95,22 +90,10 @@
 					</AnimationGroup>
 				</Animations>
 				<Scripts>
-					<OnShow function="AFKFullscreenFrame_Flasher_OnShow"/>
-					<OnHide function="AFKFullscreenFrame_Flasher_OnHide"/>
+					<OnShow method="OnShow"/>
+					<OnHide method="OnHide"/>
 				</Scripts>
 			</Frame>
-
-			<PlayerModel parentKey="BigPlayerModel" frameLevel="2" hidden="true">
-				<Size x="290" y="650" />
-				<Anchors>
-					<Anchor point="RIGHT" x="-50" />
-				</Anchors>
-				<Scripts>
-					<OnLoad function="AFKFullscreenFrameModel_OnLoad"/>
-					<OnEvent function="AFKFullscreenFrameModel_OnEvent"/>
-					<OnShow function="AFKFullscreenFrame_BigPlayerModel_OnShow"/>
-				</Scripts>
-			</PlayerModel>
 
 			<Frame parentKey="PanelHolder">
 				<Size x="0" y="140" />
@@ -120,19 +103,19 @@
 				</Anchors>
 			</Frame>
 
-			<PlayerModel parentKey="PanelBackgroundModel" frameLevel="2" hidden="true">
+			<PlayerModel parentKey="PanelBackgroundModel" mixin="AFKFullscreenModelMixin" frameLevel="1" hidden="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.PanelHolder" />
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.PanelHolder" />
 				</Anchors>
 				<Scripts>
-					<OnLoad function="AFKFullscreenFrameModel_OnLoad"/>
-					<OnEvent function="AFKFullscreenFrameModel_OnEvent"/>
-					<!-- OnShow function="AFKFullscreenFrame_BackgroundModel_OnShow"/ -->
+					<OnLoad method="OnLoad"/>
+					<OnEvent method="OnEvent"/>
+					<OnShow method="BackgroundOnShow"/>
 				</Scripts>
 			</PlayerModel>
 
-			<Frame parentKey="PanelBackground" frameLevel="3">
+			<Frame parentKey="PanelBackground" frameLevel="4">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.PanelHolder" />
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.PanelHolder" />
@@ -150,7 +133,7 @@
 				</Layers>
 			</Frame>
 
-			<Frame parentKey="PanelShadow" frameLevel="3">
+			<Frame parentKey="PanelShadow" frameLevel="4">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.PanelHolder" />
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.PanelHolder" />
@@ -189,7 +172,7 @@
 				</Layers>
 			</Frame>
 
-			<Frame parentKey="PanelBorder" frameLevel="3">
+			<Frame parentKey="PanelBorder" frameLevel="4">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.PanelHolder" />
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.PanelHolder" />
@@ -236,7 +219,7 @@
 				</Layers>
 			</Frame>
 
-			<Frame parentKey="PanelBorderEdge" frameLevel="3">
+			<Frame parentKey="PanelBorderEdge" frameLevel="4">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.PanelHolder" />
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.PanelHolder" />
@@ -263,7 +246,7 @@
 				</Layers>
 			</Frame>
 
-			<Frame parentKey="PanelOverlay" frameLevel="3">
+			<Frame parentKey="PanelOverlay" frameLevel="4">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.PanelHolder" />
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.PanelHolder" />
@@ -275,7 +258,7 @@
 				</Layers>
 			</Frame>
 
-			<PlayerModel parentKey="PanelClockModel" frameLevel="4" hidden="true">
+			<PlayerModel parentKey="PanelClockModel" mixin="AFKFullscreenModelMixin" frameLevel="4" hidden="true">
 				<Size x="230" />
 				<Anchors>
 					<Anchor point="RIGHT" />
@@ -283,13 +266,13 @@
 					<Anchor point="BOTTOM" relativeKey="$parent.PanelBackground" y="1" />
 				</Anchors>
 				<Scripts>
-					<OnLoad function="AFKFullscreenFrameModel_OnLoad"/>
-					<OnEvent function="AFKFullscreenFrameModel_OnEvent"/>
-					<OnShow function="AFKFullscreenFrame_ClockModel_OnShow"/>
+					<OnLoad method="OnLoad"/>
+					<OnEvent method="OnEvent"/>
+					<OnShow method="ClockOnShow"/>
 				</Scripts>
 			</PlayerModel>
 
-			<PlayerModel parentKey="PanelPlayerModel" frameLevel="4" hidden="true">
+			<PlayerModel parentKey="PanelPlayerModel" mixin="AFKFullscreenModelMixin" frameLevel="4" hidden="true">
 				<Size x="230" />
 				<Anchors>
 					<Anchor point="LEFT" />
@@ -297,16 +280,16 @@
 					<Anchor point="BOTTOM" relativeKey="$parent.PanelBackground" y="1" />
 				</Anchors>
 				<Scripts>
-					<OnLoad function="AFKFullscreenFrameModel_OnLoad"/>
-					<OnEvent function="AFKFullscreenFrameModel_OnEvent"/>
-					<OnShow function="AFKFullscreenFrame_PlayerModel_OnShow"/>
+					<OnLoad method="OnLoad"/>
+					<OnEvent method="OnEvent"/>
+					<OnShow method="PlayerOnShow"/>
 				</Scripts>
 			</PlayerModel>
 
-			<Frame parentKey="PanelInfos" frameLevel="5" topLevel="true" >
+			<Frame parentKey="PanelInfos" frameLevel="6" topLevel="true" >
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.InfoBackground" />
-					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.InfoBackground" />
+					<Anchor point="TOPLEFT" relativeKey="$parent.PanelBackground" />
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.PanelBackground" />
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
@@ -350,26 +333,21 @@
 
 	<Frame name="AFKFullscreenFrame" inherits="AFKFullscreenFrameTemplate" frameStrata="FULLSCREEN_DIALOG" hidden="true">
 		<Scripts>
-			<OnLoad function="AFKFullscreenFrame_OnLoad"/>
-			<OnEvent function="AFKFullscreenFrame_OnEvent"/>
-			<OnUpdate function="AFKFullscreenFrame_OnUpdate"/>
-			<OnShow function="AFKFullscreenFrame_OnShow"/>
-			<OnHide function="AFKFullscreenFrame_OnHide"/>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnUpdate method="OnUpdate"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>
 
-	<Frame name="AFKFullscreenDemoFrame" parent="UIParent" frameStrata="TOOLTIP" hidden="true">
-		<Size x="320" y="240" />
+	<Frame name="AFKFullscreenDemoFrame" mixin="AFKFullscreenDemoFrameMixin" parent="UIParent" toplevel="true" frameStrata="TOOLTIP" hidden="true">
+		<Size x="400" y="400" />
 		<Anchors>
 			<Anchor point="RIGHT" relativeTo="UIParent" x="-20"/>
 		</Anchors>
 		<Frames>
-			<Frame name="$parentChild" parentKey="Child" inherits="AFKFullscreenFrameTemplate">
-				<Scripts>
-					<OnUpdate function="AFKFullscreenFrame_OnUpdate"/>
-					<OnHide function="AFKFullscreenFrame_OnHide"/>
-				</Scripts>
-			</Frame>
+			<Frame name="$parentChild" parentKey="Child" inherits="AFKFullscreenFrameTemplate"/>
 			<Frame parentKey="border">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="-11" y="11" />
@@ -381,9 +359,9 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad function="AFKFullscreenDemoFrame_OnLoad"/>
-			<OnShow function="AFKFullscreenDemoFrame_OnShow"/>
-			<!-- OnHide function="AFKFullscreenDemoFrame_OnHide"/-->
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>
 
