@@ -190,7 +190,6 @@
 				<Layers>
 					<Layer level="BORDER" textureSubLevel="1">
 						<Texture parentKey="Top" horizTile="true">
-							<Size y="64"/>
 							<KeyValues>
 								<KeyValue key="point" value="TOP" type="string"/>
 								<KeyValue key="pointDefaultX" value="0" type="number"/>
@@ -199,7 +198,6 @@
 							<Anchors><Anchor point="TOP" /><Anchor point="LEFT" /><Anchor point="RIGHT" /></Anchors>
 						</Texture>
 						<Texture parentKey="Bottom" horizTile="true">
-							<Size y="64"/>
 							<KeyValues>
 								<KeyValue key="point" value="BOTTOM" type="string"/>
 								<KeyValue key="pointDefaultX" value="0" type="number"/>
@@ -208,22 +206,20 @@
 							<Anchors><Anchor point="BOTTOM" /><Anchor point="LEFT" /><Anchor point="RIGHT" /></Anchors>
 						</Texture>
 						<Texture parentKey="Left" vertTile="true">
-							<Size y="64"/>
 							<KeyValues>
 								<KeyValue key="point" value="LEFT" type="string"/>
 								<KeyValue key="pointDefaultX" value="0" type="number"/>
 								<KeyValue key="pointDefaultY" value="0" type="number"/>
 							</KeyValues>
-							<Anchors><Anchor point="LEFT" /><Anchor point="TOP" /><Anchor point="BOTTOM" /></Anchors>
+							<Anchors><Anchor point="LEFT" /></Anchors>
 						</Texture>
 						<Texture parentKey="Right" vertTile="true">
-							<Size y="64"/>
 							<KeyValues>
 								<KeyValue key="point" value="RIGHT" type="string"/>
 								<KeyValue key="pointDefaultX" value="0" type="number"/>
 								<KeyValue key="pointDefaultY" value="0" type="number"/>
 							</KeyValues>
-							<Anchors><Anchor point="RIGHT" /><Anchor point="TOP" /><Anchor point="BOTTOM" /></Anchors>
+							<Anchors><Anchor point="RIGHT" /></Anchors>
 						</Texture>
 					</Layer>
 				</Layers>

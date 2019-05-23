@@ -23,20 +23,29 @@ local LDBI = LibStub("LibDBIcon-1.0", true);
 -------------------------------------------------
 -- misc local functions
 -------------------------------------------------
-local debugMode = "@project-version@"=="@".."project-version".."@";
-function ns.print(...)
-	local colors,t,c = {"0099ff","00ff00","ff6060","44ffff","ffff00","ff8800","ff44ff","ffffff"},{},1;
-	for i,v in ipairs({...}) do
-		v = tostring(v);
-		if i==1 and v~="" then
-			tinsert(t,"|cff0099ff"..addon.."|r:"); c=2;
+do
+	local addon_short = "FH";
+	local colors = {"0099ff","00ff00","ff6060","44ffff","ffff00","ff8800","ff44ff","ffffff"};
+	local function colorize(...)
+		local t,c,a1 = {tostringall(...)},1,...;
+		if type(a1)=="boolean" then tremove(t,1); end
+		if a1~=false then
+			tinsert(t,1,"|cff0099ff"..((a1==true and addon_short) or (a1=="||" and "||") or addon).."|r"..(a1~="||" and ":" or ""));
+			c=2;
 		end
-		if not v:match("||c") then
-			v,c = "|cff"..colors[c]..v.."|r", c<#colors and c+1 or 1;
+		for i=c, #t do
+			if not t[i]:find("\124c") then
+				t[i],c = "|cff"..colors[c]..t[i].."|r", c<#colors and c+1 or 1;
+			end
 		end
-		tinsert(t,v);
+		return unpack(t);
 	end
-	print(unpack(t));
+	function ns.print(...)
+		print(colorize(...));
+	end
+	function ns.debug(...)
+		ConsolePrint(date("|cff999999%X|r"),colorize(...));
+	end
 end
 
 function ns.debug(...)
@@ -94,6 +103,11 @@ local function SetPanelSkin(frame,name,isDemo)
 
 						obj:SetTexture(v.Texture,true);
 
+						v.Width = tonumber(v.Width or v.W);
+						v.Height = tonumber(v.Height or v.H);
+						if v.Width then obj:SetWidth(v.Width); end
+						if v.Height then obj:SetHeight(v.Height); end
+
 						if type(v.Coords)=="string" or type(v.Coords)=="table" then
 							local t = {};
 							if type(v.Coords)=="string" then
@@ -106,11 +120,6 @@ local function SetPanelSkin(frame,name,isDemo)
 							obj:SetTexCoord(unpack(t));
 						end
 
-						v.Width = tonumber(v.Width);
-						v.Height = tonumber(v.Height);
-						if v.Width then obj:SetWidth(v.Width); end
-						if v.Height then obj:SetHeight(v.Height); end
-
 						if v.HTile~=nil then
 							obj:SetHorizTile(v.HTile=="true" or v.HTile==true);
 						end
@@ -118,6 +127,7 @@ local function SetPanelSkin(frame,name,isDemo)
 						if v.VTile~=nil then
 							obj:SetVertTile(v.VTile=="true" or v.VTile==true);
 						end
+
 						v.Scale = tonumber(v.Scale);
 						if v.Scale and i:find("^Background") then
 							obj:GetParent():SetScale(v.Scale);
@@ -234,7 +244,7 @@ end
 local function DataBrokerInit()
 	LDB_Object = LDB:NewDataObject(addon,{
 		type	= "launcher",
-		icon	= "Interface\\Icons\\Ability_Foundryraid_Dormant",
+		icon	= media.."Ability_Foundryraid_Dormant",
 		label	= L[addon],
 		text	= L[addon],
 		OnTooltipShow = function(tt)
@@ -274,11 +284,7 @@ function AFKFullscreenModelMixin:ClockOnShow()
 	self:SetModel("spells\\Garrison_Shipment_Pending_State");
 	self:SetPortraitZoom(1);
 	self:SetRotation(0.5);
-	if ns.version_build<70000000 then
-		self:SetPosition(5.15,0.12,1.795); -- wod
-	else
-		self:SetPosition(2.8,0,.71); -- legion
-	end
+	self:SetPosition(2.8,0,.71);
 	self:RefreshCamera();
 end
 
@@ -323,6 +329,7 @@ function AFKFullscreenFlasherMixin:OnShow()
 			size = w; -- for player with vertical screens ;-)
 		end
 		self.AnimTexture2:SetTexture(media.."fullscreen-"..faction);
+		self.AnimTexture2:SetDesaturated(true);
 		self.AnimTexture2:SetVertexColor(unpack(afkfullscreenDB.fullscreenwarning_color));
 		self.AnimTexture2:SetSize(size,size);
 		self.AnimTexture2:Show();
