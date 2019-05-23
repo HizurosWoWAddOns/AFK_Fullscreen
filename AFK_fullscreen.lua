@@ -48,9 +48,12 @@ do
 	end
 end
 
-function ns.debug(...)
-	if debugMode then
-		ns.print("<debug>",...);
+ns.IsClassic = IsClassic
+if not ns.IsClassic then
+	local version,build,datestr,interface = GetBuildInfo()
+	build = tonumber(build);
+	function ns.IsClassic()
+		return build>30000 and interface<20000;
 	end
 end
 

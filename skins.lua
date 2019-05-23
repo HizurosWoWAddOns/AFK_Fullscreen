@@ -50,15 +50,6 @@ ns.panelSkins["SimpleBlack"] = {
 	"nil",
 	"Show:false","Show:true;H:16;Y:2"
 }
-ns.panelSkins["Draktaron Wall 1"] = {
-	"nil","Texture:World\\Expansion02\\Doodads\\ZULDRAK\\TrollRuins\\DRAK_WALL_DARK;Scale:.546875","nil","nil",
-	"nil","nil",
-	"nil","nil",
-	"nil","nil",
-	"nil","nil",
-	"nil",
-	"Show:false","Show:true;H:24"
-}
 ns.panelSkins["Silvermoon Grass"] = {
 	"nil","Texture:Dungeons\\TEXTURES\\SILVERMOONCITY\\BM_SLVRMN_GRASS01;Scale:.546875","nil","nil",
 	"nil","nil",
@@ -68,8 +59,8 @@ ns.panelSkins["Silvermoon Grass"] = {
 	"nil",
 	"Show:true;H:16","Show:false"
 }
-ns.panelSkins["Suramar"] = {
-	"nil","Texture:World\\Expansion06\\Doodads\\Dungeon\\Doodads\\7NE_NightElf_Curb_Set03_Suramar2;Scale:.2734375","nil","nil",
+ns.panelSkins["Parchment"] = {
+	"nil","Texture:Interface\\FontStyles\\FontStyleParchment;Scale:0.546875","nil","nil",
 	"nil","nil",
 	"nil","nil",
 	"nil","nil",
@@ -77,39 +68,83 @@ ns.panelSkins["Suramar"] = {
 	"nil",
 	"Show:false","Show:true;H:24"
 }
-ns.panelSkins["Serpentine Bazaar 1"] = {
-	"nil","Texture:world\\expansion07\\doodads\\serpentine\\8se_serpentine_bazaar_cloth01;Scale:.2","nil","nil",
+ns.panelSkins["GuildBankFrameLike"] = {
+	"nil","Texture:"..media.."UI-GuildBankFrame-Left-mod;Scale:1","nil","nil",
 	"nil","nil",
 	"nil","nil",
 	"nil","nil",
 	"nil","nil",
 	"nil",
 	"Show:false","Show:true;H:24"
+}
+if not ns.IsClassic() then
+	ns.panelSkins["Barbershop"] = {
+		"nil","Texture:"..media.."Barbershop-mod;Scale:0.58091286307054;H:241","nil","nil",
+		"nil","nil",
+		"nil","nil",
+		"nil","nil",
 
-}
+		"Texture:"..media.."Barbershop-mod;Coords:0,0.1875,0.470703125,1;W:55.767634854772;H:157.42738589212", -- left
+		-- 0, 96, 241, 512
+		"Texture:"..media.."Barbershop-mod;Coords:0.220703125,0.408203125,0.470703125,1;W:96;H:271", -- right
+		-- 113, 209, 241, 512
 
-ns.panelSkins["Serpentine Bazaar 2"] = {
-	"nil","Texture:world\\expansion07\\doodads\\serpentine\\8se_serpentine_bazaar_cloth01b;Scale:.2","nil","nil",
-	"nil","nil",
-	"nil","nil",
-	"nil","nil",
-	"nil","nil",
-	"nil",
-	"Show:false","Show:true;H:24"
-}
+		"nil",
+		"Show:false","Show:true;H:24"
+	}
+	ns.panelSkins["Dalaran Ornament"] = {
+		"nil","Texture:world\\expansion06\\doodads\\dalaran\\dal2_mural;Scale:.25","nil","nil",
+		-- 1024/560
+		"nil","nil",
+		"nil","nil",
+		"nil","nil",
+		"nil","nil",
+		"nil",
+		"Show:false","Show:true;H:24"
+	}
+	ns.panelSkins["Draktaron Wall 1"] = {
+		"nil","Texture:World\\Expansion02\\Doodads\\ZULDRAK\\TrollRuins\\DRAK_WALL_DARK;Scale:.546875","nil","nil",
+		"nil","nil",
+		"nil","nil",
+		"nil","nil",
+		"nil","nil",
+		"nil",
+		"Show:false","Show:true;H:24"
+	}
+	ns.panelSkins["Serpentine Bazaar 1"] = {
+		"nil","Texture:world\\expansion07\\doodads\\serpentine\\8se_serpentine_bazaar_cloth01;Scale:.2","nil","nil",
+		"nil","nil",
+		"nil","nil",
+		"nil","nil",
+		"nil","nil",
+		"nil",
+		"Show:false","Show:true;H:24"
 
-ns.panelSkins["Dalaran Ornament"] = {
-	"nil","Texture:world\\expansion06\\doodads\\dalaran\\dal2_mural;Scale:.25","nil","nil",
-	-- 1024/560
-	"nil","nil",
-	"nil","nil",
-	"nil","nil",
-	"nil","nil",
-	"nil",
-	"Show:false","Show:true;H:24"
-}
+	}
+	ns.panelSkins["Serpentine Bazaar 2"] = {
+		"nil","Texture:world\\expansion07\\doodads\\serpentine\\8se_serpentine_bazaar_cloth01b;Scale:.2","nil","nil",
+		"nil","nil",
+		"nil","nil",
+		"nil","nil",
+		"nil","nil",
+		"nil",
+		"Show:false","Show:true;H:24"
+	}
+	ns.panelSkins["Suramar"] = {
+		"nil","Texture:World\\Expansion06\\Doodads\\Dungeon\\Doodads\\7NE_NightElf_Curb_Set03_Suramar2;Scale:.2734375","nil","nil",
+		"nil","nil",
+		"nil","nil",
+		"nil","nil",
+		"nil","nil",
+		"nil",
+		"Show:false","Show:true;H:24"
+	}
+end
 
 --@do-not-package@
+	-- Interface/Garrison/HordeBfAMissionFrame
+	-- Interface/Garrison/AllianceBfAMissionFrame
+	-- /HELPFRAME/CS_HelpTextures_Tile
 --[=[
 	-- faction warboards
 	-- interface/QuestionFrame/Warboard
