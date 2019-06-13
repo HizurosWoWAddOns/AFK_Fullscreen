@@ -95,11 +95,13 @@ local function SetPanelSkin(frame,name,isDemo)
 				if i~="BackgroundModel" and (i:find("^Background") or i:find("Border")) then
 					if v.Texture or v.Atlas then
 						if v.Atlas then
-							local l,r,t,b,HTile,VTile
-							v.Texture, v.Width, v.Height, l, r, t, b, HTile, VTile = GetAtlasInfo(v.Atlas);
-							if v.HTile==nil then v.HTile = HTile; end
-							if v.VTile==nil then v.VTile = VTile; end
-							v.Coords = {l,r,t,b};
+							local atlasinfo = C_Texture.GetAtlasInfo(v.Atlas);
+							if atlasinfo then
+								v.Texture, v.Width, v.Height = atlasinfo.filename or atlasinfo.file,atlasinfo.width, atlasinfo.height;
+								if v.HTile==nil then v.HTile = atlasinfo.tilesHorizontally; end
+								if v.VTile==nil then v.VTile = atlasinfo.tilesVertically; end
+								v.Coords = {atlasinfo.leftTexCoord, atlasinfo.rightTexCoord, atlasinfo.topTexCoord, atlasinfo.bottomTexCoord};
+							end
 						end
 
 						obj:SetTexture("Interface\\buttons\\white8x8",false);
