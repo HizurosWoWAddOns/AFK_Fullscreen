@@ -286,7 +286,11 @@ end
 
 function AFKFullscreenModelMixin:ClockOnShow()
 	self:ClearModel();
-	self:SetModel("spells\\Garrison_Shipment_Pending_State");
+	if v=="8.1.5" then
+		self:SetModel("spells\\Garrison_Shipment_Pending_State");
+	else
+		self:SetModel(1087509); -- SetModel doesn't like path strings since bfa 8.2; using fileID
+	end
 	self:SetPortraitZoom(1);
 	self:SetRotation(0.5);
 	self:SetPosition(2.8,0,.71);
