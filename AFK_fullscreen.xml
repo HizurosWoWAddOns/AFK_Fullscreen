@@ -278,6 +278,25 @@
 				</Scripts>
 			</PlayerModel>
 
+			<Frame parentKey="PanelClockImage" frameLevel="4" hidden="true">
+				<Size x="230" />
+				<Anchors>
+					<Anchor point="RIGHT" />
+					<Anchor point="TOP" relativeKey="$parent.PanelBackground" />
+					<Anchor point="BOTTOM" relativeKey="$parent.PanelBackground" y="1" />
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture file="Interface/AddOns/AFK_FullScreen/media/ClockImage">
+							<Size x="128" y="128" />
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+
 			<PlayerModel parentKey="PanelPlayerModel" mixin="AFKFullscreenModelMixin" frameLevel="4" hidden="true">
 				<Size x="230" />
 				<Anchors>

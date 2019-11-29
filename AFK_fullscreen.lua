@@ -48,14 +48,23 @@ do
 	end
 end
 
-ns.IsClassic = IsClassic
-if not ns.IsClassic then
-	local version,build,datestr,interface = GetBuildInfo()
-	build = tonumber(build);
-	function ns.IsClassic()
-		return build>30000 and interface<20000;
-	end
+  -----------------------
+-- Client version checks --
+  -----------------------
+do
+	local version,build = GetBuildInfo();
+	local v1,v2,v3 = strsplit(".",version);
+	ns.client_version = tonumber(v1.."."..v2..v3..build);
 end
+
+function ns.IsClassicClient()
+	return ns.client_version<2;
+end
+
+function ns.IsNotClassicClient()
+	return ns.client_version>=2;
+end
+
 
 local function UnpackSkin(obj,isDemo)
 	local t,k = {},keys;
@@ -286,11 +295,7 @@ end
 
 function AFKFullscreenModelMixin:ClockOnShow()
 	self:ClearModel();
-	if v=="8.1.5" then
-		self:SetModel("spells\\Garrison_Shipment_Pending_State");
-	else
-		self:SetModel(1087509); -- SetModel doesn't like path strings since bfa 8.2; using fileID
-	end
+	self:SetModel(1087509);
 	self:SetPortraitZoom(1);
 	self:SetRotation(0.5);
 	self:SetPosition(2.8,0,.71);
@@ -411,7 +416,11 @@ function AFKFullscreenDemoFrameMixin:OnHide()
 	self.Child.PanelInfos.AFKTimer:SetText("");
 	self.Child.FullScreenWarning:Hide();
 	self.Child.PanelPlayerModel:Hide();
-	self.Child.PanelClockModel:Hide();
+	if ns.IsClassicClient() then
+		self.Child.PanelClockImage:Hide();
+	else
+		self.Child.PanelClockModel:Hide();
+	end
 	self.Child.PanelBackgroundModel:Hide();
 	if demoticker then
 		demoticker:Cancel();
@@ -474,7 +483,11 @@ function AFKFullscreenFrameMixin:OnShow()
 	self.timer=time()-1;
 	self.elapse=1;
 	self.PanelPlayerModel:Show();
-	self.PanelClockModel:Show();
+	if ns.IsClassicClient() then
+		self.PanelClockImage:Show();
+	else
+		self.PanelClockModel:Show();
+	end
 	self.PanelInfos.Realm:Show();
 	self.PanelInfos.Date:Show();
 
@@ -486,7 +499,11 @@ function AFKFullscreenFrameMixin:OnShow()
 	self.PanelInfos.AFKTimer:SetTextColor(unpack(afkfullscreenDB.infopanel_textcolor));
 
 	self.PanelPlayerModel:SetShown(afkfullscreenDB.infopanel_playermodel);
-	self.PanelClockModel:SetShown(afkfullscreenDB.infopanel_clockmodel);
+	if ns.IsClassicClient() then
+		self.PanelClockImage:SetShown(afkfullscreenDB.infopanel_clockmodel);
+	else
+		self.PanelClockModel:SetShown(afkfullscreenDB.infopanel_clockmodel);
+	end
 
 	self.PanelInfos.Character:SetShown(afkfullscreenDB.infopanel_playernamerealm);
 	self.PanelInfos.Realm:SetShown(afkfullscreenDB.infopanel_playernamerealm);
@@ -506,7 +523,11 @@ function AFKFullscreenFrameMixin:OnHide()
 	self.PanelInfos.AFKTimer:SetText("");
 	self.FullScreenWarning:Hide();
 	self.PanelPlayerModel:Hide();
-	self.PanelClockModel:Hide();
+	if ns.IsClassicClient() then
+		self.PanelClockImage:Hide();
+	else
+		self.PanelClockModel:Hide();
+	end
 	self.PanelBackgroundModel:Hide();
 	if ticker then
 		ticker:Cancel();
