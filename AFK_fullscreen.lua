@@ -434,6 +434,24 @@ end
 -------------------------------------------------
 AFKFullscreenFrameMixin = {};
 
+local function updatePanelPosition()
+	local pos,ph = afkfullscreenDB.infopanel_position,AFKFullscreenFrame.PanelHolder;
+	ph:ClearAllPoints();
+	if pos=="top" or IsInCinematicScene() or InCinematic() or CinematicFrame:IsVisible() or MovieFrame:IsVisible() then
+		ph:SetPoint("TOPLEFT");
+		ph:SetPoint("TOPRIGHT");
+		AFKFullscreenFrame.FullScreenWarning:Hide();
+	elseif pos=="bottom" then
+		ph:SetPoint("BOTTOMLEFT");
+		ph:SetPoint("BOTTOMRIGHT");
+		AFKFullscreenFrame.FullScreenWarning:SetShown(afkfullscreenDB.show_fullscreenwarning);
+	else -- middle
+		ph:SetPoint("LEFT");
+		ph:SetPoint("RIGHT");
+		AFKFullscreenFrame.FullScreenWarning:SetShown(afkfullscreenDB.show_fullscreenwarning);
+	end
+end
+
 function AFKFullscreenFrameMixin:OnLoad()
 	keys = {
 		{"BackgroundModel",   self.PanelBackgroundModel},
@@ -456,21 +474,13 @@ function AFKFullscreenFrameMixin:OnLoad()
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("PLAYER_FLAGS_CHANGED");
 	self:RegisterEvent("PLAYER_REGEN_DISABLED");
+	self:RegisterEvent("CINEMATIC_START");
+	self:RegisterEvent("CINEMATIC_STOP");
+	self:RegisterEvent("PLAY_MOVIE");
 end
 
 function AFKFullscreenFrameMixin:OnShow()
-	local pos,ph = afkfullscreenDB.infopanel_position,AFKFullscreenFrame.PanelHolder;
-	ph:ClearAllPoints();
-	if pos=="top" then
-		ph:SetPoint("TOPLEFT");
-		ph:SetPoint("TOPRIGHT");
-	elseif pos=="bottom" then
-		ph:SetPoint("BOTTOMLEFT");
-		ph:SetPoint("BOTTOMRIGHT");
-	else -- middle
-		ph:SetPoint("LEFT");
-		ph:SetPoint("RIGHT");
-	end
+	updatePanelPosition();
 
 	self:SetScale(UIParent:GetEffectiveScale());
 
@@ -478,7 +488,11 @@ function AFKFullscreenFrameMixin:OnShow()
 
 	self.FadeIn:Play();
 
-	self.FullScreenWarning:SetShown(afkfullscreenDB.show_fullscreenwarning);
+	if MovieFrame:IsVisible() then
+		self.FullScreenWarning:Hide();
+	else
+		self.FullScreenWarning:SetShown(afkfullscreenDB.show_fullscreenwarning);
+	end
 
 	self.timer=time()-1;
 	self.elapse=1;
@@ -548,6 +562,8 @@ function AFKFullscreenFrameMixin:OnEvent(event, arg1)
 		self.PanelInfos.Character:SetText(UnitName("player"));
 		self.PanelInfos.Realm:SetText(GetRealmName());
 
+		MovieFrame:HookScript("OnHide",updatePanelPosition);
+
 		if afkfullscreenDB.show_addonloaded then
 			ns.print(L["AddOn loaded..."]);
 		end
@@ -557,6 +573,8 @@ function AFKFullscreenFrameMixin:OnEvent(event, arg1)
 		end);
 	elseif event=="PLAYER_REGEN_DISABLED" then
 		securecall("SetUIVisibility",true);
+	elseif self:IsVisible() and (event=="CINEMATIC_START" or event=="CINEMATIC_STOP" or event=="PLAY_MOVIE") then
+		updatePanelPosition();
 	end
 end
 
