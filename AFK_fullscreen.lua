@@ -30,7 +30,7 @@ do
 		local t,c,a1 = {tostringall(...)},1,...;
 		if type(a1)=="boolean" then tremove(t,1); end
 		if a1~=false then
-			tinsert(t,1,"|cff0099ff"..((a1==true and addon_short) or (a1=="||" and "||") or addon).."|r"..(a1~="||" and ":" or ""));
+			tinsert(t,1,"|cff0099ff"..((a1==true and addon_short) or (a1=="||" and "||") or addon).."|r"..(a1~="||" and HEADER_COLON or ""));
 			c=2;
 		end
 		for i=c, #t do
@@ -77,10 +77,10 @@ local function UnpackSkin(obj,isDemo)
 	end
 	for i,v in ipairs(obj)do
 		t[k[i][1]]={k[i][2],false};
-		if v:find(":") then
+		if v:find(HEADER_COLON) then
 			local T={};
 			for _,s in ipairs({strsplit(";",v)})do
-				local K,V = strsplit(":",s); T[K]=V;
+				local K,V = strsplit(HEADER_COLON,s); T[K]=V;
 			end
 			t[k[i][1]] = {k[i][2],T};
 		elseif v=="true" then
@@ -549,8 +549,8 @@ function AFKFullscreenFrameMixin:OnHide()
 	end
 end
 
-function AFKFullscreenFrameMixin:OnEvent(event, arg1)
-	if event=="ADDON_LOADED" and arg1==addon then
+function AFKFullscreenFrameMixin:OnEvent(event, ...)
+	if event=="ADDON_LOADED" and ...==addon then
 		ns.dbIntegrityCheck(); -- defined in options.lua
 
 		ns.registerOptions(); -- defined in options.lua
