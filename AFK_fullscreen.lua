@@ -470,7 +470,7 @@ function AFKFullscreenFrameMixin:OnLoad()
 		{"InsetShadow",       {self.PanelShadow.InsetTop,self.PanelShadow.InsetBottom}},
 		{"OutsetShadow",      {self.PanelShadow.OutsetTop,self.PanelShadow.OutsetBottom}}
 	};
-	self:RegisterEvent("ADDON_LOADED");
+	self:RegisterEvent("VARIABLES_LOADED");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("PLAYER_FLAGS_CHANGED");
 	self:RegisterEvent("PLAYER_REGEN_DISABLED");
@@ -550,7 +550,7 @@ function AFKFullscreenFrameMixin:OnHide()
 end
 
 function AFKFullscreenFrameMixin:OnEvent(event, ...)
-	if event=="ADDON_LOADED" and ...==addon then
+	if event=="VARIABLES_LOADED" then
 		ns.dbIntegrityCheck(); -- defined in options.lua
 
 		ns.registerOptions(); -- defined in options.lua
