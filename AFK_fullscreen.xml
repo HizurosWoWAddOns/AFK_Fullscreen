@@ -372,14 +372,18 @@
 		</Anchors>
 		<Frames>
 			<Frame name="$parentChild" parentKey="Child" inherits="AFKFullscreenFrameTemplate"/>
-			<Frame parentKey="border">
+			<Frame parentKey="border" inherits="BackdropTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="-11" y="11" />
 					<Anchor point="BOTTOMRIGHT" x="10" y="-10" />
 				</Anchors>
-				<Backdrop edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-					<EdgeSize val="32"/>
-				</Backdrop>
+				<Scripts>
+					<OnLoad>
+						self:SetBackdrop({
+							edgeFile=[[Interface\DialogFrame\UI-DialogBox-Border]], edgeSize=32, tile=true
+						});
+					</OnLoad>
+				</Scripts>
 			</Frame>
 		</Frames>
 		<Scripts>
