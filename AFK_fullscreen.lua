@@ -364,6 +364,12 @@ end
 AFKFullscreenDemoFrameMixin = {};
 
 function AFKFullscreenDemoFrameMixin:OnLoad()
+	self.border = CreateFrame("Frame", nil, self, BackdropTemplateMixin and "BackdropTemplate");
+	self.border:SetPoint("TOPLEFT",-11,11);
+	self.border:SetPoint("BOTTOMRIGHT",10,-10);
+	self.border:SetBackdrop({
+		edgeFile=[[Interface\DialogFrame\UI-DialogBox-Border]], edgeSize=32, tile=true
+	});
 	demoKeys = {
 		{"BackgroundModel",   self.Child.PanelBackgroundModel},
 		{"BackgroundLayer1",  self.Child.PanelBackground.Layer1},
