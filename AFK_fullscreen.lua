@@ -459,6 +459,9 @@ local function updatePanelPosition()
 end
 
 function AFKFullscreenFrameMixin:OnLoad()
+	self:ClearAllPoints();
+	self:SetPoint("TOPLEFT",WorldFrame);
+	self:SetPoint("BOTTOMRIGHT",WorldFrame);
 	keys = {
 		{"BackgroundModel",   self.PanelBackgroundModel},
 		{"BackgroundLayer1",  self.PanelBackground.Layer1},
