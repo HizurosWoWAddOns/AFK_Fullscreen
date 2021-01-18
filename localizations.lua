@@ -11,13 +11,20 @@ local L = setmetatable({},{
 ns.L = L;
 
 -- Do you want to help localize this addon?
--- https://wow.curseforge.com/projects/farmhud/localization
+-- https://wow.curseforge.com/projects/afk-fullscreen-warning/localization
 
-L["Color"] = COLOR; -- Color
-L["Custom"] = VIDEO_QUALITY_LABEL6; -- Custom
+--L["Custom"] = VIDEO_QUALITY_LABEL6; -- Custom
 L[addon] = "AFK Fullscreen Warning";
 
 --@do-not-package@
+L["AddOnLoaded"] = "AddOn loaded..."
+L["AddOnLoadedDesc"] = "Show 'AddOn loaded...' message on login"
+L["ShowDemo"] = "Show demo"
+L["ShowDemoDesc"] = "Display a little demo frame to show a selected skin"
+L["HideUI"] = "Hide UI"
+L["HideUIDesc"] = "Hide user interface on AFK"
+L["FullscreenTexture"] = "Fullscreen texture"
+L["FullscreenTextureDesc"] = "Choose texture for fullscreen warning"
 L["ViewportSupport"] = "Viewport support"
 L["ViewportSupportDesc"] = "Anchor all elements on WorldFrame instead of UIParent. Usefull for AddOns like CT_Viewport from CTMod."
 --@end-do-not-package@
@@ -30,22 +37,21 @@ if LOCALE_deDE then
 	L["Alert sound options"] = "Alarmton Optionen"; -- options.lua
 	L["Border blizzard like"] = "Umrandung Blizzard ähnlich"; -- options.lua
 	L["Bottom"] = "Unten"; -- options.lua
-	L["Choose texture for fullscreen warning"] = ""; -- options.lua
 	L["Click"] = "Klick"; -- AFK_fullscreen.lua
 	L["Clock animation"] = "Uhranimation"; -- options.lua
 	L["Dancing"] = "Tanzend"; -- options.lua
-	L["Display a little demo frame to show a selected skin"] = "Zeigt ein kleines Demofenster zu anzeigen des gewählten Skin"; -- options.lua
 	L["Do nothing"] = "Tue nichts"; -- options.lua
 	L["Enable alert sound"] = "Aktiviere Alarmton"; -- options.lua
 	L["File"] = "Datei"; -- options.lua
 	L["Flat"] = "Flach"; -- options.lua
 	L["Fullscreen options"] = "Vollbild Optionen"; -- options.lua
-	L["Fullscreen texture"] = "Vollbild Grafik"; -- options.lua
+	L["FullscreenTextureDesc"] = ""; -- options.lua
+	L["FullscreenTexture"] = "Vollbild Grafik"; -- options.lua
 	L["Fullscreen warning"] = "Vollbildwarnung"; -- options.lua
 	L["Gradient centered horizontal"] = "Verlauf zentriert Honrizontal"; -- options.lua
 	L["Gradient centered vertical"] = "Verlauf zentriert Vertikal"; -- options.lua
-	L["Hide UI"] = "Verstecke UI"; -- options.lua
-	L["Hide user interface on AFK"] = "Verstecke die Benutzeroberfläche bei AFK"; -- options.lua
+	L["HideUIDesc"] = "Verstecke die Benutzeroberfläche bei AFK"; -- options.lua
+	L["HideUI"] = "Verstecke UI"; -- options.lua
 	L["Info panel elements"] = "Infopanel Elemente"; -- options.lua
 	L["Info panel skins"] = "Infopanel Aussehen"; -- options.lua
 	L["Left click"] = "Links Klick"; -- AFK_fullscreen.lua
@@ -61,7 +67,8 @@ if LOCALE_deDE then
 	L["Select alert sound"] = "Wähle Alarmton"; -- options.lua
 	L["Select a skin"] = "Wähle ein Aussehen"; -- options.lua
 	L["Select output channel"] = "Wähle Ausgabekanal"; -- options.lua
-	L["Show demo"] = "Zeige Demo"; -- options.lua
+	L["ShowDemo"] = "Zeige Demo"; -- options.lua
+	L["ShowDemoDesc"] = "Zeigt ein kleines Demofenster zu anzeigen des gewählten Skin"; -- options.lua
 	L["Time & date"] = "Uhrzeit & Datum"; -- options.lua
 	L["to open config"] = "zum öffnen der Einstellungen"; -- AFK_fullscreen.lua
 	L["Top"] = "Oben"; -- options.lua

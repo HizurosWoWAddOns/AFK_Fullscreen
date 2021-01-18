@@ -109,7 +109,7 @@ local options = {
 
 		show_addonloaded = {
 			type = "toggle", order = 2,
-			name = L["AddOn loaded..."], desc = L["Show 'AddOn loaded...' message on login"]
+			name = L["AddOnLoaded"], desc = L["AddOnLoadedDesc"]
 		},
 
 		viewport_support = {
@@ -119,7 +119,7 @@ local options = {
 
 		demo = {
 			type = "execute", order = 4,
-			name = L["Show demo"], desc = L["Display a little demo frame to show a selected skin"],
+			name = L["ShowDemo"], desc = L["ShowDemoDesc"],
 			func = function() AFKFullscreenDemoFrame:SetShown(not AFKFullscreenDemoFrame:IsShown()); end
 		},
 
@@ -129,7 +129,7 @@ local options = {
 			args = {
 				hide_ui = {
 					type = "toggle", order = 1,
-					name = L["Hide UI"], desc = L["Hide user interface on AFK"]
+					name = L["HideUI"], desc = L["HideUIDesc"]
 				},
 
 				fullscreenwarning_factionlogo = {
@@ -144,13 +144,13 @@ local options = {
 
 				fullscreenwarning_texture = {
 					type = "select", order = 4, width = "double",
-					name = L["Fullscreen texture"], desc = L["Choose texture for fullscreen warning"],
+					name = L["FullscreenTexture"], desc = L["FullscreenTextureDesc"],
 					values = fullscreen_textures
 				},
 
 				fullscreenwarning_color = {
 					type = "color", order = 5,
-					name = L["Color"],
+					name = COLOR,
 				},
 
 				fullscreenwarning_color_reset = {
@@ -243,14 +243,6 @@ function ns.dbIntegrityCheck()
 	if afkfullscreenDB==nil then
 		afkfullscreenDB = {};
 	end
-
-	-- migration
-	if afkfullscreenDB.select_skin~=nil then
-		afkfullscreenDB.infopanel_skin = afkfullscreenDB.select_skin;
-		afkfullscreenDB.select_skin = nil;
-	end
-	-- /migration
-
 	for i,v in pairs(dbDefaults)do
 		if afkfullscreenDB[i] == nil then
 			afkfullscreenDB[i] = v;

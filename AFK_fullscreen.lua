@@ -583,7 +583,7 @@ function AFKFullscreenFrameMixin:OnEvent(event, ...)
 		ns.UpdateViewport();
 
 		if afkfullscreenDB.show_addonloaded then
-			ns.print(L["AddOn loaded..."]);
+			ns.print(L["AddOnLoaded"]);
 		end
 	elseif event=="PLAYER_ENTERING_WORLD" or event=="PLAYER_FLAGS_CHANGED" then
 		C_Timer.After(0.314159,function()
