@@ -90,6 +90,16 @@ local function UnpackSkin(obj,isDemo)
 	return t;
 end
 
+function ns.UpdateViewport()
+	AFKFullscreenFrame:ClearAllPoints();
+	if afkfullscreenDB.viewport_support then
+		AFKFullscreenFrame:SetPoint("TOPLEFT",WorldFrame);
+		AFKFullscreenFrame:SetPoint("BOTTOMRIGHT",WorldFrame);
+	else
+		AFKFullscreenFrame:SetAllPoints();
+	end
+end
+
 local function SetPanelSkin(frame,name,isDemo)
 	if not ns.panelSkins[name] then
 		name = default;
@@ -459,9 +469,6 @@ local function updatePanelPosition()
 end
 
 function AFKFullscreenFrameMixin:OnLoad()
-	self:ClearAllPoints();
-	self:SetPoint("TOPLEFT",WorldFrame);
-	self:SetPoint("BOTTOMRIGHT",WorldFrame);
 	keys = {
 		{"BackgroundModel",   self.PanelBackgroundModel},
 		{"BackgroundLayer1",  self.PanelBackground.Layer1},
@@ -572,6 +579,8 @@ function AFKFullscreenFrameMixin:OnEvent(event, ...)
 		self.PanelInfos.Realm:SetText(GetRealmName());
 
 		MovieFrame:HookScript("OnHide",updatePanelPosition);
+
+		ns.UpdateViewport();
 
 		if afkfullscreenDB.show_addonloaded then
 			ns.print(L["AddOn loaded..."]);

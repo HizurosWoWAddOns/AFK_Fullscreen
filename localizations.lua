@@ -17,6 +17,11 @@ L["Color"] = COLOR; -- Color
 L["Custom"] = VIDEO_QUALITY_LABEL6; -- Custom
 L[addon] = "AFK Fullscreen Warning";
 
+--@do-not-package@
+L["ViewportSupport"] = "Viewport support"
+L["ViewportSupportDesc"] = "Anchor all elements on WorldFrame instead of UIParent. Usefull for AddOns like CT_Viewport from CTMod."
+--@end-do-not-package@
+
 -- @localization(locale="enUS", format="lua_additive_table", handle-subnamespaces="none", handle-unlocalized="ignore")@
 
 if LOCALE_deDE then

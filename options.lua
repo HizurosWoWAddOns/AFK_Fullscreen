@@ -22,6 +22,7 @@ local infopanelVertPosition = {
 local dbDefaults = {
 	hide_ui = true,
 	show_addonloaded = true,
+	viewport_support = true,
 
 	--[[ fullscreenwarning entries ]]
 	show_fullscreenwarning = true,
@@ -47,7 +48,6 @@ local dbDefaults = {
 };
 
 local function presetSelect(info,...)
-
 end
 
 local function soundOption(info,value)
@@ -80,6 +80,9 @@ local function optionsFunc(info,...)
 				AFKFullscreenDemoFrame:Show();
 			end);
 		end
+		if key=="viewport_support" then
+			ns.UpdateViewport();
+		end
 		return;
 	elseif type(afkfullscreenDB[key])=="table" then
 		return unpack(afkfullscreenDB[key]); -- color table
@@ -109,8 +112,13 @@ local options = {
 			name = L["AddOn loaded..."], desc = L["Show 'AddOn loaded...' message on login"]
 		},
 
+		viewport_support = {
+			type = "toggle", order = 3,
+			name = L["ViewportSupport"], desc = L["ViewportSupportDesc"]
+		},
+
 		demo = {
-			type = "execute", order = 3,
+			type = "execute", order = 4,
 			name = L["Show demo"], desc = L["Display a little demo frame to show a selected skin"],
 			func = function() AFKFullscreenDemoFrame:SetShown(not AFKFullscreenDemoFrame:IsShown()); end
 		},
