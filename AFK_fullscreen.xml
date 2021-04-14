@@ -113,7 +113,7 @@
 				</Anchors>
 			</Frame>
 
-			<PlayerModel parentKey="PanelBackgroundModel" mixin="AFKFullscreenModelMixin" frameLevel="1" hidden="true">
+			<PlayerModel parentKey="PanelBackgroundModel" mixin="AFKFullscreenModelMixin" frameLevel="4" hidden="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.PanelHolder" />
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.PanelHolder" />
@@ -125,7 +125,7 @@
 				</Scripts>
 			</PlayerModel>
 
-			<Frame parentKey="PanelBackground" frameLevel="4">
+			<Frame parentKey="PanelBackground" frameLevel="3">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.PanelHolder" />
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.PanelHolder" />
@@ -368,7 +368,7 @@
 	<Frame name="AFKFullscreenDemoFrame" mixin="AFKFullscreenDemoFrameMixin" parent="UIParent" toplevel="true" frameStrata="TOOLTIP" hidden="true">
 		<Size x="400" y="400" />
 		<Anchors>
-			<Anchor point="RIGHT" relativeTo="UIParent" x="-20"/>
+			<Anchor point="RIGHT" relativeTo="UIParent" x="-60"/>
 		</Anchors>
 		<Frames>
 			<Frame name="$parentChild" parentKey="Child" inherits="AFKFullscreenFrameTemplate"/>

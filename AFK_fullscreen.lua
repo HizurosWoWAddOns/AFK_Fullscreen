@@ -65,7 +65,6 @@ function ns.IsNotClassicClient()
 	return ns.client_version>=2;
 end
 
-
 local function UnpackSkin(obj,isDemo)
 	local t,k = {},keys;
 	if isDemo then
