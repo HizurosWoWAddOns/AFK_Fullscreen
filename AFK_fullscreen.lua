@@ -57,14 +57,6 @@ do
 	ns.client_version = tonumber(v1.."."..v2..v3..build);
 end
 
-function ns.IsClassicClient()
-	return ns.client_version<2;
-end
-
-function ns.IsNotClassicClient()
-	return ns.client_version>=2;
-end
-
 local function UnpackSkin(obj,isDemo)
 	local t,k = {},keys;
 	if isDemo then
@@ -431,7 +423,7 @@ function AFKFullscreenDemoFrameMixin:OnHide()
 	self.Child.PanelInfos.AFKTimer:SetText("");
 	self.Child.FullScreenWarning:Hide();
 	self.Child.PanelPlayerModel:Hide();
-	if ns.IsClassicClient() then
+	if ns.client_version<3 then
 		self.Child.PanelClockImage:Hide();
 	else
 		self.Child.PanelClockModel:Hide();
@@ -512,7 +504,7 @@ function AFKFullscreenFrameMixin:OnShow()
 	self.timer=time()-1;
 	self.elapse=1;
 	self.PanelPlayerModel:Show();
-	if ns.IsClassicClient() then
+	if ns.client_version<3 then
 		self.PanelClockImage:Show();
 	else
 		self.PanelClockModel:Show();
@@ -528,7 +520,7 @@ function AFKFullscreenFrameMixin:OnShow()
 	self.PanelInfos.AFKTimer:SetTextColor(unpack(afkfullscreenDB.infopanel_textcolor));
 
 	self.PanelPlayerModel:SetShown(afkfullscreenDB.infopanel_playermodel);
-	if ns.IsClassicClient() then
+	if ns.client_version<3 then
 		self.PanelClockImage:SetShown(afkfullscreenDB.infopanel_clockmodel);
 	else
 		self.PanelClockModel:SetShown(afkfullscreenDB.infopanel_clockmodel);
@@ -552,7 +544,7 @@ function AFKFullscreenFrameMixin:OnHide()
 	self.PanelInfos.AFKTimer:SetText("");
 	self.FullScreenWarning:Hide();
 	self.PanelPlayerModel:Hide();
-	if ns.IsClassicClient() then
+	if ns.client_version<3 then
 		self.PanelClockImage:Hide();
 	else
 		self.PanelClockModel:Hide();

@@ -1,4 +1,7 @@
 ## Interface: 90005
+## Interface-Retail: 90005
+## Interface-Classic: 10305
+## Interface-BC: 20501
 ## Title: AFK Fullscreen Warning
 ## Notes: Signelice your character are afk as fullscreen info like low health or out of control warn.
 ## Version: @project-version@

@@ -65,7 +65,7 @@ ns.panelSkins["GuildBankFrameLike"] = {
 	"Show:false","Show:true;H:24"
 }
 
-if ns.IsNotClassicClient() then
+if ns.client_version>=3 then
 	--[[
 	-- unstable
 	ns.panelSkins["Barbershop"] = {
@@ -79,7 +79,7 @@ if ns.IsNotClassicClient() then
 		"Show:false","Show:true;H:24"
 	}
 	--]]
-	ns.panelSkins["GarrisonReport"] = {
+	ns.panelSkins["GarrisonReport"] = { -- wod
 		"nil","Atlas:GarrLanding-MiddleTile;HTile:false;Scale:1","nil","nil",
 		"nil","nil","nil","nil",
 		"Atlas:GarrLanding-Top;Y:9;Scale:1","Atlas:GarLanding-Bottom;Y:10",
@@ -87,7 +87,7 @@ if ns.IsNotClassicClient() then
 		"nil",
 		"Show:false","Show:true;h:16;Y:-14"
 	}
-	ns.panelSkins["Dalaran Ornament"] = {
+	ns.panelSkins["Dalaran Ornament"] = { -- woltk
 		--"nil","Texture:world\\expansion06\\doodads\\dalaran\\dal2_mural;Scale:.25","nil","nil",
 		"nil","Texture:1373396;Scale:.25","nil","nil",
 		"nil","nil","nil","nil",
@@ -95,7 +95,7 @@ if ns.IsNotClassicClient() then
 		"nil",
 		"Show:false","Show:true;H:24"
 	}
-	ns.panelSkins["Draktaron Wall 1"] = {
+	ns.panelSkins["Draktaron Wall 1"] = { -- woltk
 		--"nil","Texture:World\\Expansion02\\Doodads\\ZULDRAK\\TrollRuins\\DRAK_WALL_DARK;Scale:.546875","nil","nil",
 		"nil","Texture:196826;Scale:.546875","nil","nil",
 		"nil","nil","nil","nil",
@@ -103,7 +103,7 @@ if ns.IsNotClassicClient() then
 		"nil",
 		"Show:false","Show:true;H:24"
 	}
-	ns.panelSkins["Serpentine Bazaar 1"] = {
+	ns.panelSkins["Serpentine Bazaar 1"] = { -- bfa
 		--"nil","Texture:world\\expansion07\\doodads\\serpentine\\8se_serpentine_bazaar_cloth01;Scale:.2","nil","nil",
 		"nil","Texture:1596444;Scale:.2","nil","nil",
 		"nil","nil","nil","nil",
@@ -112,7 +112,7 @@ if ns.IsNotClassicClient() then
 		"Show:false","Show:true;H:24"
 
 	}
-	ns.panelSkins["Serpentine Bazaar 2"] = {
+	ns.panelSkins["Serpentine Bazaar 2"] = { -- bfa
 		--"nil","Texture:world\\expansion07\\doodads\\serpentine\\8se_serpentine_bazaar_cloth01b;Scale:.2","nil","nil",
 		"nil","Texture:1601639;Scale:.2","nil","nil",
 		"nil","nil","nil","nil",
@@ -120,7 +120,7 @@ if ns.IsNotClassicClient() then
 		"nil",
 		"Show:false","Show:true;H:24"
 	}
-	ns.panelSkins["Suramar"] = {
+	ns.panelSkins["Suramar"] = { -- legion
 		--"nil","Texture:World\\Expansion06\\Doodads\\Dungeon\\Doodads\\7NE_NightElf_Curb_Set03_Suramar2;Scale:.2734375","nil","nil",
 		"nil","Texture:1408791;Scale:.2734375","nil","nil",
 		"nil","nil","nil","nil",
