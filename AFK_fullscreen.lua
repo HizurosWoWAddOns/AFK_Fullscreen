@@ -25,12 +25,12 @@ local LDBI = LibStub("LibDBIcon-1.0", true);
 -------------------------------------------------
 do
 	local addon_short = "FH";
-	local colors = {"0099ff","00ff00","ff6060","44ffff","ffff00","ff8800","ff44ff","ffffff"};
+	local colors = {"82c5ff","00ff00","ff6060","44ffff","ffff00","ff8800","ff44ff","ffffff"};
 	local function colorize(...)
 		local t,c,a1 = {tostringall(...)},1,...;
 		if type(a1)=="boolean" then tremove(t,1); end
 		if a1~=false then
-			tinsert(t,1,"|cff0099ff"..((a1==true and addon_short) or (a1=="||" and "||") or addon).."|r"..(a1~="||" and HEADER_COLON or ""));
+			tinsert(t,1,"|cff82c5ff"..((a1==true and addon_short) or (a1=="||" and "||") or addon).."|r"..(a1~="||" and HEADER_COLON or ""));
 			c=2;
 		end
 		for i=c, #t do
@@ -55,6 +55,10 @@ do
 	local version,build = GetBuildInfo();
 	local v1,v2,v3 = strsplit(".",version);
 	ns.client_version = tonumber(v1.."."..v2..v3..build);
+end
+
+local function IsCinematic()
+	return IsInCinematicScene() or InCinematic() or CinematicFrame:IsVisible() or MovieFrame:IsVisible();
 end
 
 local function UnpackSkin(obj,isDemo)
@@ -441,13 +445,20 @@ end
 -------------------------------------------------
 AFKFullscreenFrameMixin = {};
 
-local function updatePanelPosition()
+local function updatePanelPosition(cinematicEnds)
 	local pos,ph = afkfullscreenDB.infopanel_position,AFKFullscreenFrame.PanelHolder;
+	local isCinematic = IsCinematic();
 	ph:ClearAllPoints();
-	if pos=="top" or IsInCinematicScene() or InCinematic() or CinematicFrame:IsVisible() or MovieFrame:IsVisible() then
+	if cinematicEnds then
+		AFKFullscreenFrame.PanelHolder:SetAlpha(1);
+	end
+	if pos=="top" or isCinematic then
 		ph:SetPoint("TOPLEFT");
 		ph:SetPoint("TOPRIGHT");
-		AFKFullscreenFrame.FullScreenWarning:Hide();
+		if isCinematic then
+			AFKFullscreenFrame.FullScreenWarning:Hide();
+			AFKFullscreenFrame.PanelHolder:SetAlpha(0);
+		end
 	elseif pos=="bottom" then
 		ph:SetPoint("BOTTOMLEFT");
 		ph:SetPoint("BOTTOMRIGHT");
@@ -495,7 +506,7 @@ function AFKFullscreenFrameMixin:OnShow()
 
 	self.FadeIn:Play();
 
-	if MovieFrame:IsVisible() then
+	if IsCinematic() then
 		self.FullScreenWarning:Hide();
 	else
 		self.FullScreenWarning:SetShown(afkfullscreenDB.show_fullscreenwarning);
@@ -569,7 +580,7 @@ function AFKFullscreenFrameMixin:OnEvent(event, ...)
 		self.PanelInfos.Character:SetText(UnitName("player"));
 		self.PanelInfos.Realm:SetText(GetRealmName());
 
-		MovieFrame:HookScript("OnHide",updatePanelPosition);
+		MovieFrame:HookScript("OnHide",function() updatePanelPosition(true) end);
 
 		ns.UpdateViewport();
 
