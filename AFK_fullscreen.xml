@@ -2,6 +2,9 @@
 ..\..\FrameXML\UI.xsd">
 
 	<Script file="localizations.lua" />
+	<!--@do-not-package@-->
+	<Script file="localizations.workfile.lua"/>
+	<!--@end-do-not-package@-->
 	<Script file="AFK_fullscreen.lua" />
 	<Script file="options.lua"/>
 	<Script file="skins.lua"/>

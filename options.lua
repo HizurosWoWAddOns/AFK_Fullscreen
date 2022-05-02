@@ -5,10 +5,11 @@ local AC = LibStub("AceConfig-3.0");
 local ACD = LibStub("AceConfigDialog-3.0");
 local LDBI = LibStub("LibDBIcon-1.0", true);
 local soundSources = {file=L["File"],lsm="LibSharedMedia"};
+local faction = UnitFactionGroup("player")
 ns.soundChannels = {};
 ns.soundFiles = {customfile=L["Use custom file"]};
 local fullscreen_textures = {
-	["none"] = NONE,
+	["none"] = ADDON_DISABLED,
 	["flat"] = L["Flat"],
 	["border1"] = L["Border blizzard like"],
 	["gradient-vertical"] = L["Gradient centered vertical"],
@@ -19,16 +20,21 @@ local infopanelVertPosition = {
 	middle = L["Middle"],
 	bottom = L["Bottom"]
 };
+local sound_channels = {
+	master = "Master",
+	sfx = "SFX"
+};
 local dbDefaults = {
 	hide_ui = true,
 	show_addonloaded = true,
 	viewport_support = true,
 
 	--[[ fullscreenwarning entries ]]
-	show_fullscreenwarning = true,
-	fullscreenwarning_color = {1,.5,0,1},
 	fullscreenwarning_texture = "border1",
+	fullscreenwarning_color = {1,.5,0,1},
+
 	fullscreenwarning_factionlogo = true,
+	--fullscreenwarning_factionlogo_color = nil, -- per character
 
 	--[[ infopanel entries ]]
 	infopanel_position = "middle",
@@ -43,9 +49,13 @@ local dbDefaults = {
 
 	--[[ alertsound entries ]]
 	sound_enabled = false,
-	sound_channel = "master",
+	sound_channel = "SFX",
 	sound_file = "",
 };
+
+local dbDefaultsChar = {
+	fullscreenwarning_factionlogo_color = nil, -- filled by function with faction color
+}
 
 local function presetSelect(info,...)
 end
@@ -104,12 +114,12 @@ local options = {
 	args = {
 		minimap = {
 			type = "toggle", order = 1,
-			name = L["Minimap button"]
+			name = L["MinimapButton"], desc = L["MimimapButtonDesc"]
 		},
 
 		show_addonloaded = {
 			type = "toggle", order = 2,
-			name = L["AddOnLoaded"], desc = L["AddOnLoadedDesc"]
+			name = L["AddOnLoaded"], desc = L["AddOnLoadedDesc"].."|n|n|cff44ff44"..L["AddOnLoadedDescAlt"].."|r"
 		},
 
 		viewport_support = {
@@ -125,93 +135,134 @@ local options = {
 
 		fullscreen = {
 			type = "group", order = 20, inline = true,
-			name = L["Fullscreen options"],
+			name = L["FullscreenOptions"],
 			args = {
 				hide_ui = {
-					type = "toggle", order = 1,
+					type = "toggle", order = 1, width = "double",
 					name = L["HideUI"], desc = L["HideUIDesc"]
 				},
 
-				fullscreenwarning_factionlogo = {
-					type = "toggle", order = 2, width = "double",
-					name = L["Faction logo"]
+				header_border = {
+					type = "header", order = 10,
+					name = L["FullscreenBorder"]
 				},
 
-				show_fullscreenwarning = {
-					type = "toggle", order = 3,
-					name = L["Fullscreen warning"]
+				desc_border = {
+					type = "description", order = 11, fontSize = "medium", hidden=true,
+					name = L["FullscreenBorderDesc"]
 				},
 
 				fullscreenwarning_texture = {
-					type = "select", order = 4, width = "double",
-					name = L["FullscreenTexture"], desc = L["FullscreenTextureDesc"],
+					type = "select", order = 12,
+					name = APPEARANCE_LABEL,
 					values = fullscreen_textures
 				},
 
 				fullscreenwarning_color = {
-					type = "color", order = 5,
+					type = "color", order = 13,
 					name = COLOR,
 				},
 
 				fullscreenwarning_color_reset = {
-					type = "execute", order = 6,
-					name = L["Reset color"],
+					type = "execute", order = 14,
+					name = L["ColorReset"],
 					func = function() afkfullscreenDB.fullscreenwarning_color = dbDefaults.fullscreenwarning_color; end
-				}
-			}
-		},
-
-		elements = {
-			type = "group", order = 40, inline = true,
-			name = L["Info panel elements"],
-			args = {
-				infopanel_playermodel = {
-					type = "toggle", order = 1,
-					name = L["Player portrait"]
 				},
 
-				infopanel_clockmodel = {
-					type = "toggle", order = 2, width = "double",
-					name = L["Clock animation"]
+				header_logo = {
+					type = "header", order = 20,
+					name = L["FullscreenFactionLogo"],
 				},
 
-				infopanel_playernamerealm = {
-					type = "toggle", order = 3,
-					name = L["Player name & realm"]
+				logo_neutral = {
+					type = "description", order = 21, fontSize = "medium",
+					name = L["FullscreenFactionLogoNeutralInfo"],
+					hidden = function() return faction~="Neutral"; end
 				},
 
-				infopanel_timedate = {
-					type = "toggle", order = 4, width = "double",
-					name = L["Time & date"]
-				},
+				logo_faction = {
+					type = "group", order = 21, inline=true,
+					name = "", hidden = function() return faction=="Neutral"; end,
+					args = {
+						desc_logo = {
+							type = "description", order = 21, fontSize = "medium",
+							name = L["FullscreenFactionLogoDesc"]
+						},
 
-				infopanel_textcolor = {
-					type = "color", order = 5,
-					name = L["Text color"]
-				},
+						fullscreenwarning_factionlogo = {
+							type = "toggle", order = 22,
+							name = ENABLE,
+						},
 
-				infopanel_resetcolor = {
-					type = "execute", order = 6,
-					name = L["Reset color"],
-					func = function() afkfullscreenDB.infopanel_textcolor = dbDefaults.infopanel_textcolor; end
+						fullscreenwarning_factionlogo_color = {
+							type = "color", order = 23,
+							name = COLOR,
+							get = function() return unpack(afkfullscreenCharDB.fullscreenwarning_factionlogo_color); end,
+							set = function(_,...) afkfullscreenCharDB.fullscreenwarning_factionlogo_color = {...}; end,
+						},
+
+						fullscreenwarning_factionlogo_color_reset = {
+							type = "execute", order = 24,
+							name = L["ColorReset"],
+							func = function() afkfullscreenCharDB.fullscreenwarning_factionlogo_color = dbDefaultsChar.fullscreenwarning_factionlogo_color; end
+						}
+					}
 				}
 			}
 		},
 
 		skins = {
 			type = "group", order = 60, inline = true,
-			name = L["Info panel skins"],
+			name = L["InfoPanelAppearance"],
 			args = {
 				infopanel_skin = {
 					type = "select", order = 1,
-					name = L["Select a skin"],
+					name = L["InfoPanelSkin"], -- Select a skin
 					values = listSkins,
 				},
 				infopanel_position = {
 					type = "select", order = 2,
-					name = L["Panel position"],
+					name = L["InfoPanelPosition"], -- Panel position
 					values = infopanelVertPosition,
 				},
+
+				elements = {
+					type = "header", order = 10,
+					name = L["InfoPanelElements"], -- Info panel elements
+				},
+
+				infopanel_playermodel = {
+					type = "toggle", order = 11,
+					name = L["InfoPanelElementsPortrait"], -- Player portrait
+					desc = L["InfoPanelElementsPortraitDesc"]
+				},
+
+				infopanel_clockmodel = {
+					type = "toggle", order = 12, width = "double",
+					name = TIMEMANAGER_TITLE,
+					desc = L["InfoPanelElementsClockDesc" .. (WOW_PROJECT_ID==WOW_PROJECT_MAINLINE and "Retail" or "Classic")]
+				},
+
+				infopanel_playernamerealm = {
+					type = "toggle", order = 13,
+					name = L["InfoPanelElementsNameAndRealm"] -- Player name & realm
+				},
+
+				infopanel_timedate = {
+					type = "toggle", order = 14, width = "double",
+					name = L["InfoPanelElementsTimeAndDate"] -- Time & date
+				},
+
+				infopanel_textcolor = {
+					type = "color", order = 15,
+					name = L["InfoPanelElementsTextColor"] -- Text color
+				},
+
+				infopanel_resetcolor = {
+					type = "execute", order = 16,
+					name = L["ColorReset"],
+					func = function() afkfullscreenDB.infopanel_textcolor = dbDefaults.infopanel_textcolor; end
+				}
 			}
 		},
 
@@ -243,10 +294,29 @@ function ns.dbIntegrityCheck()
 	if afkfullscreenDB==nil then
 		afkfullscreenDB = {};
 	end
+	if afkfullscreenCharDB==nil then
+		afkfullscreenCharDB = {};
+	end
+
+	if faction~="Neutral" then
+		dbDefaultsChar.fullscreenwarning_factionlogo_color = {PLAYER_FACTION_COLORS[faction=="Alliance" and 1 or 0]:GetRGB()};
+	end
+
 	for i,v in pairs(dbDefaults)do
 		if afkfullscreenDB[i] == nil then
 			afkfullscreenDB[i] = v;
 		end
+	end
+
+	for i,v in pairs(dbDefaultsChar)do
+		if afkfullscreenCharDB[i] == nil then
+			afkfullscreenCharDB[i] = v;
+		end
+	end
+
+	-- deprecated options
+	if afkfullscreenDB.show_fullscreenwarning~=nil then
+		afkfullscreenDB.show_fullscreenwarning = nil;
 	end
 end
 

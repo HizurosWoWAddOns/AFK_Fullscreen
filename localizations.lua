@@ -1,6 +1,6 @@
 
-local addon, ns = ...
-local L = setmetatable({},{
+local L, addon, ns = {},...;
+ns.L = setmetatable(L,{
 	__index=function(t,k)
 		local n=tostring(k);
 		rawset(t,k,n);
@@ -8,52 +8,31 @@ local L = setmetatable({},{
 	end
 });
 
-ns.L = L;
-
 -- Do you want to help localize this addon?
--- https://wow.curseforge.com/projects/afk-fullscreen-warning/localization
+-- https://www.curseforge.com/wow/addons/@cf-project-name@/localization
 
 --L["Custom"] = VIDEO_QUALITY_LABEL6; -- Custom
 L[addon] = "AFK Fullscreen Warning";
 
--- @localization(locale="enUS", format="lua_additive_table", handle-subnamespaces="none", handle-unlocalized="ignore")@
-
+--@localization(locale="enUS", format="lua_additive_table", handle-subnamespaces="none", handle-unlocalized="ignore")@
 if LOCALE_deDE then
 --@localization(locale="deDE", format="lua_additive_table", handle-subnamespaces="none", handle-unlocalized="ignore")@
-end
-
-if LOCALE_esES then
+elseif LOCALE_esES then
 --@localization(locale="esES", format="lua_additive_table", handle-subnamespaces="none", handle-unlocalized="ignore")@
-end
-
-if LOCALE_esMX then
+elseif LOCALE_esMX then
 --@localization(locale="esMX", format="lua_additive_table", handle-subnamespaces="none", handle-unlocalized="ignore")@
-end
-
-if LOCALE_frFR then
+elseif LOCALE_frFR then
 --@localization(locale="frFR", format="lua_additive_table", handle-subnamespaces="none", handle-unlocalized="ignore")@
-end
-
-if LOCALE_itIT then
+elseif LOCALE_itIT then
 --@localization(locale="itIT", format="lua_additive_table", handle-subnamespaces="none", handle-unlocalized="ignore")@
-end
-
-if LOCALE_koKR then
+elseif LOCALE_koKR then
 --@localization(locale="koKR", format="lua_additive_table", handle-subnamespaces="none", handle-unlocalized="ignore")@
-end
-
-if LOCALE_ptBR or LOCALE_ptPT then
+elseif LOCALE_ptBR or LOCALE_ptPT then
 --@localization(locale="ptBR", format="lua_additive_table", handle-subnamespaces="none", handle-unlocalized="ignore")@
-end
-
-if LOCALE_ruRU then
+elseif LOCALE_ruRU then
 --@localization(locale="ruRU", format="lua_additive_table", handle-subnamespaces="none", handle-unlocalized="ignore")@
-end
-
-if LOCALE_zhCN then
+elseif LOCALE_zhCN then
 --@localization(locale="zhCN", format="lua_additive_table", handle-subnamespaces="none", handle-unlocalized="ignore")@
-end
-
-if LOCALE_zhTW then
+elseif LOCALE_zhTW then
 --@localization(locale="zhTW", format="lua_additive_table", handle-subnamespaces="none", handle-unlocalized="ignore")@
 end

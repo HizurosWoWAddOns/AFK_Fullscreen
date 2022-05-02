@@ -18,6 +18,7 @@ local default = "SimpleBlack";
 local ACD = LibStub("AceConfigDialog-3.0");
 local LDB_Object,LDB = nil,LibStub("LibDataBroker-1.1");
 local LDBI = LibStub("LibDBIcon-1.0", true);
+local faction = UnitFactionGroup("player")
 
 
 -------------------------------------------------
@@ -92,6 +93,27 @@ function ns.UpdateViewport()
 		AFKFullscreenFrame:SetPoint("BOTTOMRIGHT",WorldFrame);
 	else
 		AFKFullscreenFrame:SetAllPoints();
+	end
+end
+
+function ns.SetBackgroundModel(obj)
+	local tObj = type(obj);
+	if tObj~="table" then
+		ns.SetBackgroundModel(AFKFullscreenFrame.PanelBackgroundModel);
+		ns.SetBackgroundModel(AFKFullscreenDemoFrame.Child.PanelBackgroundModel);
+		return;
+	end
+	if tObj=="table" and obj.GetObjectType and obj:GetObjectType()=="PlayerModel" then
+		local modelData = ns.models[ns.modelIndex];
+		obj:SetScale(1);
+		obj:SetModelScale(1);
+		obj:SetModel(modelData.id);
+		C_Timer.After(0.05, function()
+			obj:SetModelScale(modelData.scale);
+			if type(modelData.pos)=="table" then
+				obj:SetPosition(unpack(modelData.pos))
+			end
+		end);
 	end
 end
 
@@ -191,7 +213,7 @@ local function SetPanelSkin(frame,name,isDemo)
 					end
 				elseif i=="BackgroundModel" then
 					obj:ClearModel();
-					obj:SetModel(v.Model);
+					ns.SetBackgroundModel();
 					obj.SetToShow=true;
 				elseif i=="InsetShadow" or i=="OutsetShadow" then
 					v.Y = tonumber(v.Y);
@@ -331,14 +353,15 @@ end
 -------------------------------------------------
 AFKFullscreenFlasherMixin = {};
 function AFKFullscreenFlasherMixin:OnShow()
-	self.style="pulse";
+	self.style = false;
 	if afkfullscreenDB.fullscreenwarning_texture~="none" then
 		self.AnimTexture1:SetTexture(media.."fullscreen-"..afkfullscreenDB.fullscreenwarning_texture);
 		self.AnimTexture1:SetVertexColor(unpack(afkfullscreenDB.fullscreenwarning_color));
 		self.AnimTexture1:Show();
+		self.style = "pulse";
 	end
-	if afkfullscreenDB.fullscreenwarning_factionlogo then
-		local faction,w,size = UnitFactionGroup("player");
+	if afkfullscreenDB.fullscreenwarning_factionlogo and faction~="Neutral" then
+		local w,size
 		if self:GetParent()==AFKFullscreenFrame then
 			w,size = UIParent:GetSize();
 		else
@@ -349,11 +372,14 @@ function AFKFullscreenFlasherMixin:OnShow()
 		end
 		self.AnimTexture2:SetTexture(media.."fullscreen-"..faction);
 		self.AnimTexture2:SetDesaturated(true);
-		self.AnimTexture2:SetVertexColor(unpack(afkfullscreenDB.fullscreenwarning_color));
+		self.AnimTexture2:SetVertexColor(unpack(afkfullscreenCharDB.fullscreenwarning_factionlogo_color));
 		self.AnimTexture2:SetSize(size,size);
 		self.AnimTexture2:Show();
+		self.style = "pulse";
 	end
-	self[self.style]:Play();
+	if self.style and self[self.style] then
+		self[self.style]:Play();
+	end
 end
 
 function AFKFullscreenFlasherMixin:OnHide()
@@ -406,7 +432,7 @@ function AFKFullscreenDemoFrameMixin:OnShow()
 	self.Child.PanelInfos.AFKTimer:SetTextColor(unpack(afkfullscreenDB.infopanel_textcolor));
 
 	self.Child.FadeIn:Play();
-	if afkfullscreenDB.show_fullscreenwarning then
+	if afkfullscreenDB.fullscreenwarning_texture or afkfullscreenDB.fullscreenwarning_factionlogo then
 		self.Child.FullScreenWarning:Show();
 	end
 
@@ -414,6 +440,7 @@ function AFKFullscreenDemoFrameMixin:OnShow()
 	self.Child.elapse=1;
 	if self.Child.PanelBackgroundModel.SetToShow then
 		self.Child.PanelBackgroundModel:Show();
+		self.ModelControl:Show();
 	end
 
 	if not demoticker then
@@ -448,6 +475,7 @@ AFKFullscreenFrameMixin = {};
 local function updatePanelPosition(cinematicEnds)
 	local pos,ph = afkfullscreenDB.infopanel_position,AFKFullscreenFrame.PanelHolder;
 	local isCinematic = IsCinematic();
+	local showFullscreen = afkfullscreenDB.fullscreenwarning_texture or afkfullscreenDB.fullscreenwarning_factionlogo;
 	ph:ClearAllPoints();
 	if cinematicEnds then
 		AFKFullscreenFrame.PanelHolder:SetAlpha(1);
@@ -462,11 +490,11 @@ local function updatePanelPosition(cinematicEnds)
 	elseif pos=="bottom" then
 		ph:SetPoint("BOTTOMLEFT");
 		ph:SetPoint("BOTTOMRIGHT");
-		AFKFullscreenFrame.FullScreenWarning:SetShown(afkfullscreenDB.show_fullscreenwarning);
+		AFKFullscreenFrame.FullScreenWarning:SetShown(showFullscreen);
 	else -- middle
 		ph:SetPoint("LEFT");
 		ph:SetPoint("RIGHT");
-		AFKFullscreenFrame.FullScreenWarning:SetShown(afkfullscreenDB.show_fullscreenwarning);
+		AFKFullscreenFrame.FullScreenWarning:SetShown(showFullscreen);
 	end
 end
 
@@ -498,6 +526,8 @@ function AFKFullscreenFrameMixin:OnLoad()
 end
 
 function AFKFullscreenFrameMixin:OnShow()
+	local showFullscreen = afkfullscreenDB.fullscreenwarning_texture or afkfullscreenDB.fullscreenwarning_factionlogo;
+
 	updatePanelPosition();
 
 	self:SetScale(UIParent:GetEffectiveScale());
@@ -509,7 +539,7 @@ function AFKFullscreenFrameMixin:OnShow()
 	if IsCinematic() then
 		self.FullScreenWarning:Hide();
 	else
-		self.FullScreenWarning:SetShown(afkfullscreenDB.show_fullscreenwarning);
+		self.FullScreenWarning:SetShown(showFullscreen);
 	end
 
 	self.timer=time()-1;
@@ -584,7 +614,7 @@ function AFKFullscreenFrameMixin:OnEvent(event, ...)
 
 		ns.UpdateViewport();
 
-		if afkfullscreenDB.show_addonloaded then
+		if afkfullscreenDB.show_addonloaded or IsShiftKeyDown() then
 			ns.print(L["AddOnLoaded"]);
 		end
 	elseif event=="PLAYER_ENTERING_WORLD" or event=="PLAYER_FLAGS_CHANGED" then
