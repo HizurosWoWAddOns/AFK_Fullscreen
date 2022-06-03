@@ -26,7 +26,7 @@ externals:
       tag: latest
 
    libs/LibColors-1.0:
-      url: https://repos.curseforge.com/wow/libstringcoloring-1-0
+      url: https://github.com/HizurosWoWAddOns/LibColors-1.0.git
       tag: latest
 
 #  libs/LibSharedMedia-3.0:
