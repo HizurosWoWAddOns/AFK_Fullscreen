@@ -5,6 +5,7 @@
 	<!--@do-not-package@-->
 	<Script file="localizations.workfile.lua"/>
 	<!--@end-do-not-package@-->
+	<Script file="libs/HizurosSharedTools/HizurosSharedTools.lua"/>
 	<Script file="AFK_fullscreen.lua" />
 	<Script file="options.lua"/>
 	<Script file="skins.lua"/>

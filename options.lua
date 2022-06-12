@@ -285,7 +285,13 @@ local options = {
 					values=ns.soundFiles,
 				}
 			}
-		}
+		},
+
+		credits = {
+			type = "group", order = 200, inline = true,
+			name = L["Credits"],
+			args = {}
+		},
 	}
 };
 
@@ -332,6 +338,7 @@ end
 function ns.registerOptions()
 	AC:RegisterOptionsTable(addon, options);
 	ACD:AddToBlizOptions(addon);
+	ns.AddCredits(options.args.credits.args);
 end
 
 function ns.registerSlashCommand()
