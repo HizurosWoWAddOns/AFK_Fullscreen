@@ -6,6 +6,8 @@ afkfullscreenDB = {};
 local addon, ns = ...;
 local L = ns.L;
 ns.addon_short = "FH";
+ns.debugMode = "@project-version@"=="@".."project-version".."@";
+
 local media,ticker,demoticker = "Interface\\AddOns\\"..addon.."\\media\\";
 local v,b = GetBuildInfo();
 ns.version_build = tonumber(gsub(v,"%.","")..b); -- vvvbbbbb
