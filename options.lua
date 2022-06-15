@@ -286,12 +286,6 @@ local options = {
 				}
 			}
 		},
-
-		credits = {
-			type = "group", order = 200, inline = true,
-			name = L["Credits"],
-			args = {}
-		},
 	}
 };
 
@@ -337,8 +331,9 @@ end
 
 function ns.registerOptions()
 	AC:RegisterOptionsTable(addon, options);
-	ACD:AddToBlizOptions(addon);
-	ns.AddCredits(options.args.credits.args);
+	local opts = ACD:AddToBlizOptions(addon);
+	LibStub("HizurosSharedTools").BlizzOptions_ExpandOnShow(opts);
+	LibStub("HizurosSharedTools").AddCredit(addon);
 end
 
 function ns.registerSlashCommand()

@@ -5,8 +5,8 @@ afkfullscreenDB = {};
 -- local variables
 local addon, ns = ...;
 local L = ns.L;
-ns.addon_short = "FH";
 ns.debugMode = "@project-version@"=="@".."project-version".."@";
+LibStub("HizurosSharedTools").RegisterPrint(ns,addon,"FH");
 
 local media,ticker,demoticker = "Interface\\AddOns\\"..addon.."\\media\\";
 local v,b = GetBuildInfo();
@@ -594,7 +594,7 @@ function AFKFullscreenFrameMixin:OnEvent(event, ...)
 		ns.UpdateViewport();
 
 		if afkfullscreenDB.show_addonloaded or IsShiftKeyDown() then
-			ns.print(L["AddOnLoaded"]);
+			ns:print(L["AddOnLoaded"]);
 		end
 	elseif event=="PLAYER_ENTERING_WORLD" or event=="PLAYER_FLAGS_CHANGED" then
 		C_Timer.After(0.314159,function()
