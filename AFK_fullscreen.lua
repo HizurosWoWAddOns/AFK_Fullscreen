@@ -362,7 +362,9 @@ function AFKFullscreenFlasherMixin:OnShow()
 end
 
 function AFKFullscreenFlasherMixin:OnHide()
-	self[self.style]:Stop();
+	if self.style and self[self.style] then
+		self[self.style]:Stop();
+	end
 	self.AnimTexture1:Hide();
 	self.AnimTexture2:Hide();
 end

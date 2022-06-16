@@ -20,7 +20,7 @@ This addon can warn you if you character is AFK.
 
 ## My other projects
 * [On Curseforge](https://www.curseforge.com/members/hizuro_de/projects)
-* [On Github](https://github.com/HizurosWoWAddOns?tab=repositories)
+* [On Github](https://github.com/orgs/HizurosWoWAddOns/)
 
 ## Disclaimer
 > World of Warcraft© and Blizzard Entertainment© are all trademarks or registered trademarks of Blizzard Entertainment in the United States and/or other countries. These terms and all related materials, logos, and images are copyright © Blizzard Entertainment.
