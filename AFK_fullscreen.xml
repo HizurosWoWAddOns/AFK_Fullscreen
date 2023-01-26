@@ -47,10 +47,6 @@
 			<AnimationGroup parentKey="FadeIn">
 				<Alpha duration="0.45" order="1" fromAlpha="0" toAlpha="1" />
 				<Scripts>
-					<OnStart>
-						local parent = self:GetParent();
-						parent:Show();
-					</OnStart>
 					<OnFinished>
 						local parent = self:GetParent();
 						parent:SetAlpha(1);
@@ -99,8 +95,8 @@
 						<Alpha childKey="AnimTexture2" startDelay="1" duration="0.75" order="2" fromAlpha=".8" toAlpha=".3"/>
 					</AnimationGroup>
 					<AnimationGroup parentKey="static">
-						<Alpha childKey="AnimTexture1" duration="0" order="1" change="1" fromAlpha="1" toAlpha="1" />
-						<Alpha childKey="AnimTexture2" duration="0" order="1" change="1" fromAlpha="1" toAlpha="1" />
+						<Alpha childKey="AnimTexture1" duration="0" order="1" fromAlpha="1" toAlpha="1" />
+						<Alpha childKey="AnimTexture2" duration="0" order="1" fromAlpha="1" toAlpha="1" />
 					</AnimationGroup>
 				</Animations>
 				<Scripts>

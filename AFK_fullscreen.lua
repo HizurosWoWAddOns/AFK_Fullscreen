@@ -6,11 +6,11 @@ afkfullscreenDB = {};
 local addon, ns = ...;
 local L = ns.L;
 ns.debugMode = "@project-version@"=="@".."project-version".."@";
-LibStub("HizurosSharedTools").RegisterPrint(ns,addon,"FH");
+LibStub("HizurosSharedTools").RegisterPrint(ns,addon,"AFK");
 
 local media,ticker,demoticker = "Interface\\AddOns\\"..addon.."\\media\\";
-local v,b = GetBuildInfo();
-ns.version_build = tonumber(gsub(v,"%.","")..b); -- vvvbbbbb
+local version,build = GetBuildInfo();
+ns.version_build = tonumber((version or "0.0.0"):gsub("%.","")..build); -- vvvbbbbb
 local PlayerPositionFix = {
 	{0,0.00,-0.08}, -- unknown
 	{0,0.05,-0.10}, -- male
@@ -277,7 +277,7 @@ local function DataBrokerInit()
 		end
 	});
 
-	if (LDBI) then
+	if LDBI and LDB_Object then
 		if afkfullscreenDB.Minimap==nil then
 			afkfullscreenDB.Minimap={hide=false};
 		end
@@ -435,7 +435,7 @@ function AFKFullscreenDemoFrameMixin:OnHide()
 	self.Child.PanelInfos.AFKTimer:SetText("");
 	self.Child.FullScreenWarning:Hide();
 	self.Child.PanelPlayerModel:Hide();
-	if ns.client_version<3 then
+	if ns.client_version<4 then
 		self.Child.PanelClockImage:Hide();
 	else
 		self.Child.PanelClockModel:Hide();
@@ -497,7 +497,7 @@ function AFKFullscreenFrameMixin:OnLoad()
 		{"InsetShadow",       {self.PanelShadow.InsetTop,self.PanelShadow.InsetBottom}},
 		{"OutsetShadow",      {self.PanelShadow.OutsetTop,self.PanelShadow.OutsetBottom}}
 	};
-	self:RegisterEvent("VARIABLES_LOADED");
+	self:RegisterEvent("ADDON_LOADED");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("PLAYER_FLAGS_CHANGED");
 	self:RegisterEvent("PLAYER_REGEN_DISABLED");
@@ -579,7 +579,7 @@ function AFKFullscreenFrameMixin:OnHide()
 end
 
 function AFKFullscreenFrameMixin:OnEvent(event, ...)
-	if event=="VARIABLES_LOADED" then
+	if event=="ADDON_LOADED" and addon==... then
 		ns.dbIntegrityCheck(); -- defined in options.lua
 
 		ns.registerOptions(); -- defined in options.lua
@@ -598,6 +598,7 @@ function AFKFullscreenFrameMixin:OnEvent(event, ...)
 		if afkfullscreenDB.show_addonloaded or IsShiftKeyDown() then
 			ns:print(L["AddOnLoaded"]);
 		end
+		self:UnregisterEvent(event);
 	elseif event=="PLAYER_ENTERING_WORLD" or event=="PLAYER_FLAGS_CHANGED" then
 		C_Timer.After(0.314159,function()
 			CheckAFK(self,event=="PLAYER_ENTERING_WORLD");
