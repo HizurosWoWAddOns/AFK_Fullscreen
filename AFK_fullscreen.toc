@@ -1,6 +1,6 @@
-## Interface: 100105
-## Interface-Wrath: 30402
-## Interface-Classic: 11403
+## Interface: 100107
+## Interface-Wrath: 30403
+## Interface-Classic: 11404
 ## Title: AFK Fullscreen Warning
 ## Notes: Signelice your character are afk as fullscreen info like low health or out of control warn.
 ## IconTexture: 1029723
