@@ -29,12 +29,17 @@ externals:
         url: https://github.com/HizurosWoWAddOns/LibColors-1.0.git
         tag: latest
 
-#  libs/LibSharedMedia-3.0:
-#      url: https://repos.wowace.com/wow/libsharedmedia-3-0/trunk/LibSharedMedia-3.0
-#      tag: latest
+    libs/LibTime-1.0:
+        url: https://github.com/HizurosWoWAddOns/LibTime-1.0.git
+        tag: latest
 
     libs/HizurosSharedTools:
         url: https://github.com/HizurosWoWAddOns/HizurosSharedTools.git
+
+# missing externals on addon page
+required-dependencies:
+    - libstringcoloring-1-0
+    - libtime-1-0
 
 enable-nolib-creation: no
 enable-toc-creation: yes
@@ -54,6 +59,5 @@ ignore:
     - libs/LibColors-1.0/LibColors-1.0-web.xml
     - libs/LibColors-1.0/LibColors-1.0-x11.xml
     - libs/LibColors-1.0/LibColors-1.0.toc
-#   - libs/LibSharedMedia-3.0/lib.xml
     - libs/HizurosSharedTools/README.md
 
