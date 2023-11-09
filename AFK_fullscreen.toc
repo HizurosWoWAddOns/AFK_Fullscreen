@@ -1,4 +1,4 @@
-## Interface: 100107
+## Interface: 100200
 ## Interface-Wrath: 30403
 ## Interface-Classic: 11404
 ## Title: AFK Fullscreen Warning
@@ -20,6 +20,7 @@ libs\AceConfig-3.0\AceConfig-3.0.xml
 libs\LibDataBroker-1.1\LibDataBroker-1.1.lua
 libs\LibDBIcon-1.0\LibDBIcon-1.0.lua
 libs\LibColors-1.0\LibColors-1.0.xml
+libs\LibTime-1.0\LibTime-1.0.xml
 libs\HizurosSharedTools\HizurosSharedTools.lua
 
 AFK_fullscreen.xml
