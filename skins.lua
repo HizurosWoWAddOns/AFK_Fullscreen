@@ -65,7 +65,7 @@ ns.panelSkins["GuildBankFrameLike"] = {
 	"Show:false","Show:true;H:24"
 }
 
-if ns.client_version>=3 then
+if WOW_PROJECT_ID==WOW_PROJECT_MAINLINE then
 	--[[
 	-- unstable
 	ns.panelSkins["Barbershop"] = {

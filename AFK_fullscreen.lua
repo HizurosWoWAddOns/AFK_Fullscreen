@@ -9,8 +9,6 @@ ns.debugMode = "@project-version@"=="@".."project-version".."@";
 LibStub("HizurosSharedTools").RegisterPrint(ns,addon,"AFK");
 
 local media,ticker,demoticker = "Interface\\AddOns\\"..addon.."\\media\\";
-local version,build = GetBuildInfo();
-ns.version_build = tonumber((version or "0.0.0"):gsub("%.","")..build); -- vvvbbbbb
 local PlayerPositionFix = {
 	{0,0.00,-0.08}, -- unknown
 	{0,0.05,-0.10}, -- male
@@ -27,15 +25,6 @@ local faction = UnitFactionGroup("player")
 -------------------------------------------------
 -- misc local functions
 -------------------------------------------------
-
-  -----------------------
--- Client version checks --
-  -----------------------
-do
-	local version,build = GetBuildInfo();
-	local v1,v2,v3 = strsplit(".",version);
-	ns.client_version = tonumber(v1.."."..v2..v3..build);
-end
 
 local function IsCinematic()
 	return IsInCinematicScene() or InCinematic() or CinematicFrame:IsVisible() or MovieFrame:IsVisible();
@@ -435,7 +424,7 @@ function AFKFullscreenDemoFrameMixin:OnHide()
 	self.Child.PanelInfos.AFKTimer:SetText("");
 	self.Child.FullScreenWarning:Hide();
 	self.Child.PanelPlayerModel:Hide();
-	if ns.client_version<4 then
+	if WOW_PROJECT_ID~=WOW_PROJECT_MAINLINE then
 		self.Child.PanelClockImage:Hide();
 	else
 		self.Child.PanelClockModel:Hide();
@@ -526,7 +515,7 @@ function AFKFullscreenFrameMixin:OnShow()
 	self.timer=time()-1;
 	self.elapse=1;
 	self.PanelPlayerModel:Show();
-	if ns.client_version<3 then
+	if WOW_PROJECT_ID~=WOW_PROJECT_MAINLINE then
 		self.PanelClockImage:Show();
 	else
 		self.PanelClockModel:Show();
@@ -542,7 +531,7 @@ function AFKFullscreenFrameMixin:OnShow()
 	self.PanelInfos.AFKTimer:SetTextColor(unpack(afkfullscreenDB.infopanel_textcolor));
 
 	self.PanelPlayerModel:SetShown(afkfullscreenDB.infopanel_playermodel);
-	if ns.client_version<3 then
+	if WOW_PROJECT_ID~=WOW_PROJECT_MAINLINE then
 		self.PanelClockImage:SetShown(afkfullscreenDB.infopanel_clockmodel);
 	else
 		self.PanelClockModel:SetShown(afkfullscreenDB.infopanel_clockmodel);
@@ -566,7 +555,7 @@ function AFKFullscreenFrameMixin:OnHide()
 	self.PanelInfos.AFKTimer:SetText("");
 	self.FullScreenWarning:Hide();
 	self.PanelPlayerModel:Hide();
-	if ns.client_version<3 then
+	if WOW_PROJECT_ID~=WOW_PROJECT_MAINLINE then
 		self.PanelClockImage:Hide();
 	else
 		self.PanelClockModel:Hide();
