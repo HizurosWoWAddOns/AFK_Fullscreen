@@ -5,7 +5,6 @@
 	<!--@do-not-package@-->
 	<Script file="localizations.workfile.lua"/>
 	<!--@end-do-not-package@-->
-	<Script file="libs/HizurosSharedTools/HizurosSharedTools.lua"/>
 	<Script file="AFK_fullscreen.lua" />
 	<Script file="options.lua"/>
 	<Script file="skins.lua"/>
@@ -18,6 +17,14 @@
 		</Anchors>
 	</Texture>
 
+	<Font name="AFKFullscreenInfoFont10" inherits="Game13Font" virtual="true">
+		<Shadow>
+			<Offset x="1" y="-1"/>
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+		<Color r="1.0" g="0.82" b="0"/>
+	</Font>
+
 	<Font name="AFKFullscreenInfoFont20" inherits="Game20Font" virtual="true">
 		<Shadow>
 			<Offset x="1" y="-1"/>
@@ -26,7 +33,15 @@
 		<Color r="1.0" g="0.82" b="0"/>
 	</Font>
 
-	<Font name="AFKFullscreenInfoFont30" inherits="Game32Font" virtual="true">
+	<Font name="AFKFullscreenInfoFont24" inherits="Game24Font" virtual="true">
+		<Shadow>
+			<Offset x="1" y="-1"/>
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+		<Color r="1.0" g="0.82" b="0"/>
+	</Font>
+
+	<Font name="AFKFullscreenInfoFont27" inherits="Game27Font" virtual="true">
 		<Shadow>
 			<Offset x="1" y="-1"/>
 			<Color r="0" g="0" b="0"/>
@@ -318,17 +333,24 @@
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
-						<FontString parentKey="Character" inherits="AFKFullscreenInfoFont40">
+						<!-- left -->
+						<FontString parentKey="Character" inherits="AFKFullscreenInfoFont40" text="PH">
 							<Anchors>
-								<Anchor point="RIGHT" relativeKey="$parent.$parent.PanelPlayerModel" relativePoint="RIGHT" x="160" y="8" />
+								<Anchor point="RIGHT" relativeKey="$parent.$parent.PanelPlayerModel" relativePoint="RIGHT" x="180" y="0" />
 							</Anchors>
 						</FontString>
-						<FontString parentKey="Realm" inherits="AFKFullscreenInfoFont20">
+						<FontString parentKey="Realm" inherits="AFKFullscreenInfoFont20" text="PH">
 							<Anchors>
 								<Anchor point="TOPRIGHT" relativeKey="$parent.Character" relativePoint="BOTTOMRIGHT" />
 							</Anchors>
 						</FontString>
+						<FontString parentKey="Guild" inherits="AFKFullscreenInfoFont24" text="PH">
+							<Anchors>
+								<Anchor point="TOPRIGHT" relativeKey="$parent.Realm" relativePoint="BOTTOMRIGHT" />
+							</Anchors>
+						</FontString>
 
+						<!-- middle -->
 						<FontString parentKey="AFKTimer" inherits="AFKFullscreenInfoFont40">
 							<Anchors>
 								<Anchor point="CENTER" y="-13" />
@@ -340,16 +362,23 @@
 							</Anchors>
 						</FontString>
 
-						<FontString parentKey="Time" inherits="AFKFullscreenInfoFont40" justifyH="LEFT">
+						<!-- right -->
+						<FontString parentKey="Time" inherits="AFKFullscreenInfoFont40" text="00:00:00">
 							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.$parent.PanelClockModel" relativePoint="LEFT" x="-160" y="8" />
+								<Anchor point="LEFT" relativeKey="$parent.$parent.PanelClockModel" relativePoint="LEFT" x="-180" y="0" />
 							</Anchors>
 						</FontString>
-						<FontString parentKey="Date" inherits="AFKFullscreenInfoFont20">
+						<FontString parentKey="Date" inherits="AFKFullscreenInfoFont20" text="PH">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.Time" relativePoint="BOTTOMLEFT" x="5" />
 							</Anchors>
 						</FontString>
+						<FontString parentKey="Time2" inherits="AFKFullscreenInfoFont27" hidden="true" text="00:00:00">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Date" relativePoint="BOTTOMLEFT" />
+							</Anchors>
+						</FontString>
+
 					</Layer>
 				</Layers>
 			</Frame>

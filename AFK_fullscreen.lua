@@ -20,6 +20,7 @@ local ACD = LibStub("AceConfigDialog-3.0");
 local LDB_Object,LDB = nil,LibStub("LibDataBroker-1.1");
 local LDBI = LibStub("LibDBIcon-1.0", true);
 local faction = UnitFactionGroup("player")
+local LT = LibStub("LibTime-1.0");
 
 
 -------------------------------------------------
@@ -52,6 +53,16 @@ local function UnpackSkin(obj,isDemo)
 		end
 	end
 	return t;
+end
+
+local function UpdatePointY(obj1,...)
+	local y,p,P,rP,x = 0,obj1:GetPoint()
+	for i,v in ipairs({...}) do
+		if v:IsShown() then
+			y = y + v:GetHeight();
+		end
+	end
+	obj1:SetPoint(p,P,rP,x,y/2)
 end
 
 function ns.UpdateViewport()
@@ -212,10 +223,12 @@ end
 local function TickerFunc(_,demoFrame)
 	local self = demoFrame or AFKFullscreenFrame
 	if self:IsShown() then
-		self.PanelInfos.AFKText:SetText(L["AFK since"]);
 		self.PanelInfos.AFKTimer:SetText(SecondsToTime(time()-self.timer));
 		self.PanelInfos.Date:SetText(_G["WEEKDAY_"..date("%A"):upper()]..", "..date("%Y-%m-%d"));
-		self.PanelInfos.Time:SetText(date("%H:%M:%S"));
+		self.PanelInfos.Time:SetText( afkfullscreenDB.infopanel_time=="s" and LT.GetTimeString("GameTime",true,true) or date("%H:%M:%S"));
+		if afkfullscreenDB.infopanel_time2~="-" then
+			self.PanelInfos.Time2:SetText( afkfullscreenDB.infopanel_time2=="s" and LT.GetTimeString("GameTime",true,true) or date("%H:%M:%S"));
+		end
 	end
 end
 
@@ -395,9 +408,12 @@ function AFKFullscreenDemoFrameMixin:OnShow()
 
 	self.Child.PanelInfos.Character:Hide();
 	self.Child.PanelInfos.Realm:Hide();
+	self.Child.PanelInfos.Guild:Hide();
 	self.Child.PanelInfos.Time:Hide();
+	self.Child.PanelInfos.Time2:Hide();
 	self.Child.PanelInfos.Date:Hide();
 
+	self.Child.PanelInfos.AFKText:SetText(L["AFK since"]);
 	self.Child.PanelInfos.AFKText:SetTextColor(unpack(afkfullscreenDB.infopanel_textcolor));
 	self.Child.PanelInfos.AFKTimer:SetTextColor(unpack(afkfullscreenDB.infopanel_textcolor));
 
@@ -521,11 +537,13 @@ function AFKFullscreenFrameMixin:OnShow()
 		self.PanelClockModel:Show();
 	end
 	self.PanelInfos.Realm:Show();
+	self.PanelInfos.Realm:SetShown(afkfullscreenDB.infopanel_playerguild);
 	self.PanelInfos.Date:Show();
 
 	self.PanelInfos.Character:SetTextColor(unpack(afkfullscreenDB.infopanel_textcolor));
 	self.PanelInfos.Realm:SetTextColor(unpack(afkfullscreenDB.infopanel_textcolor));
 	self.PanelInfos.Time:SetTextColor(unpack(afkfullscreenDB.infopanel_textcolor));
+	self.PanelInfos.Time2:SetTextColor(unpack(afkfullscreenDB.infopanel_textcolor));
 	self.PanelInfos.Date:SetTextColor(unpack(afkfullscreenDB.infopanel_textcolor));
 	self.PanelInfos.AFKText:SetTextColor(unpack(afkfullscreenDB.infopanel_textcolor));
 	self.PanelInfos.AFKTimer:SetTextColor(unpack(afkfullscreenDB.infopanel_textcolor));
@@ -540,8 +558,20 @@ function AFKFullscreenFrameMixin:OnShow()
 	self.PanelInfos.Character:SetShown(afkfullscreenDB.infopanel_playernamerealm);
 	self.PanelInfos.Realm:SetShown(afkfullscreenDB.infopanel_playernamerealm);
 
+	local showGuild = afkfullscreenDB.infopanel_playernamerealm and IsGuildMember("player") and afkfullscreenDB.infopanel_playerguild;
+	self.PanelInfos.Guild:SetShown(showGuild);
+	if showGuild then
+		local guildname = GetGuildInfo("player");
+		self.PanelInfos.Guild:SetText(guildname)
+	end
+	self.PanelInfos.AFKText:SetText(L["AFK since"]);
+
 	self.PanelInfos.Time:SetShown(afkfullscreenDB.infopanel_timedate);
 	self.PanelInfos.Date:SetShown(afkfullscreenDB.infopanel_timedate);
+	self.PanelInfos.Time2:SetShown(afkfullscreenDB.infopanel_timedate and afkfullscreenDB.infopanel_time2~="-");
+
+	UpdatePointY(self.PanelInfos.Character,self.PanelInfos.Realm,self.PanelInfos.Guild)
+	UpdatePointY(self.PanelInfos.Time,self.PanelInfos.Date,self.PanelInfos.Time2)
 
 	self.PanelBackgroundModel:SetShown(self.PanelBackgroundModel.SetToShow);
 

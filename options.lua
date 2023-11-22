@@ -4,6 +4,8 @@ local L=ns.L;
 local AC = LibStub("AceConfig-3.0");
 local ACD = LibStub("AceConfigDialog-3.0");
 local LDBI = LibStub("LibDBIcon-1.0", true);
+local C = WrapTextInColorCode
+local Mage = RAID_CLASS_COLORS.MAGE.colorStr;
 local soundSources = {file=L["File"],lsm="LibSharedMedia"};
 local faction = UnitFactionGroup("player")
 ns.soundChannels = {};
@@ -41,8 +43,11 @@ local dbDefaults = {
 
 	infopanel_playermodel = true,
 	infopanel_playernamerealm = true,
+	infopanel_playerguild = true,
 	infopanel_clockmodel = true,
 	infopanel_timedate = true,
+	infopanel_time = "h",
+	infopanel_time2 = "s",
 	infopanel_textcolor = {1.0,0.82,0},
 
 	infopanel_skin = "Etherreal",
@@ -231,35 +236,83 @@ local options = {
 					name = L["InfoPanelElements"], -- Info panel elements
 				},
 
+				desc1 = {
+					type = "description", order = 11, fontSize = "medium", width="full",
+					name = C(L["Graphical Elements"],Mage)
+				},
+
 				infopanel_playermodel = {
-					type = "toggle", order = 11,
+					type = "toggle", order = 12,
 					name = L["InfoPanelElementsPortrait"], -- Player portrait
 					desc = L["InfoPanelElementsPortraitDesc"]
 				},
 
 				infopanel_clockmodel = {
-					type = "toggle", order = 12, width = "double",
+					type = "toggle", order = 13, width = "double",
 					name = TIMEMANAGER_TITLE,
 					desc = L["InfoPanelElementsClockDesc" .. (WOW_PROJECT_ID==WOW_PROJECT_MAINLINE and "Retail" or "Classic")]
 				},
 
+				desc2 = {
+					type = "description", order = 20, fontSize = "medium", width="full",
+					name = "|n"..C(L["Text elements on left side"],Mage)
+				},
+
 				infopanel_playernamerealm = {
-					type = "toggle", order = 13,
+					type = "toggle", order = 22,
 					name = L["InfoPanelElementsNameAndRealm"] -- Player name & realm
 				},
 
+				infopanel_playerguild = {
+					type = "toggle", order = 23,
+					name = GUILD, -- Player guild
+					disabled = function() return not afkfullscreenDB.infopanel_playernamerealm end
+				},
+
+				desc2r = {
+					type = "description", order = 24, fontSize = "medium", width="full",
+					name = "|n"..C(L["Text elements on right side"],Mage)
+				},
+
 				infopanel_timedate = {
-					type = "toggle", order = 14, width = "double",
+					type = "toggle", order = 25, width = "full",
 					name = L["InfoPanelElementsTimeAndDate"] -- Time & date
 				},
 
+				infopanel_time = {
+					type = "select", order = 26,
+					name = L["InfoPanelElementsTimeType"], desc = L["InfoPanelElementsTimeTypeDesc"],
+					values = {
+						--["-"] = NONE,
+						["h"] = L["LocalTime"],
+						["s"] = L["ServerTime"]
+					},
+					disabled = function() return not afkfullscreenDB.infopanel_timedate end
+				},
+
+				infopanel_time2 = {
+					type = "select", order = 27,
+					name = L["InfoPanelElementsTime2Type"], desc = L["InfoPanelElementsTimeTypeDesc"].."\n\n"..L["InfoPanelElementsTime2TypeDesc"],
+					values = {
+						["-"] = NONE,
+						["h"] = L["LocalTime"],
+						["s"] = L["ServerTime"]
+					},
+					disabled = function() return not afkfullscreenDB.infopanel_timedate end
+				},
+
+				desc3 = {
+					type = "description", order = 30, fontSize = "medium", width="full",
+					name = "|n"..C(L["Text coloring"],Mage)
+				},
+
 				infopanel_textcolor = {
-					type = "color", order = 15,
+					type = "color", order = 31,
 					name = L["InfoPanelElementsTextColor"] -- Text color
 				},
 
 				infopanel_resetcolor = {
-					type = "execute", order = 16,
+					type = "execute", order = 32,
 					name = L["ColorReset"],
 					func = function() afkfullscreenDB.infopanel_textcolor = dbDefaults.infopanel_textcolor; end
 				}
