@@ -65,6 +65,17 @@ ns.panelSkins["GuildBankFrameLike"] = {
 	"Show:false","Show:true;H:24"
 }
 
+if WOW_PROJECT_ID>=WOW_PROJECT_WRATH_CLASSIC then
+	ns.panelSkins["Draktaron Wall 1"] = { -- woltk
+		--"nil","Texture:World\\Expansion02\\Doodads\\ZULDRAK\\TrollRuins\\DRAK_WALL_DARK;Scale:.546875","nil","nil",
+		"nil","Texture:196826;Scale:.546875","nil","nil",
+		"nil","nil","nil","nil",
+		"nil","nil","nil","nil",
+		"nil",
+		"Show:false","Show:true;H:24"
+	}
+end
+
 if WOW_PROJECT_ID==WOW_PROJECT_MAINLINE then
 	--[[
 	-- unstable
@@ -90,14 +101,6 @@ if WOW_PROJECT_ID==WOW_PROJECT_MAINLINE then
 	ns.panelSkins["Dalaran Ornament"] = { -- woltk
 		--"nil","Texture:world\\expansion06\\doodads\\dalaran\\dal2_mural;Scale:.25","nil","nil",
 		"nil","Texture:1373396;Scale:.25","nil","nil",
-		"nil","nil","nil","nil",
-		"nil","nil","nil","nil",
-		"nil",
-		"Show:false","Show:true;H:24"
-	}
-	ns.panelSkins["Draktaron Wall 1"] = { -- woltk
-		--"nil","Texture:World\\Expansion02\\Doodads\\ZULDRAK\\TrollRuins\\DRAK_WALL_DARK;Scale:.546875","nil","nil",
-		"nil","Texture:196826;Scale:.546875","nil","nil",
 		"nil","nil","nil","nil",
 		"nil","nil","nil","nil",
 		"nil",
