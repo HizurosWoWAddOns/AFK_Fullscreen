@@ -65,7 +65,7 @@ ns.panelSkins["GuildBankFrameLike"] = {
 	"Show:false","Show:true;H:24"
 }
 
-if WOW_PROJECT_ID>=WOW_PROJECT_WRATH_CLASSIC then
+if WOW_PROJECT_ID==WOW_PROJECT_WRATH_CLASSIC or WOW_PROJECT_ID==WOW_PROJECT_MAINLINE then
 	ns.panelSkins["Draktaron Wall 1"] = { -- woltk
 		--"nil","Texture:World\\Expansion02\\Doodads\\ZULDRAK\\TrollRuins\\DRAK_WALL_DARK;Scale:.546875","nil","nil",
 		"nil","Texture:196826;Scale:.546875","nil","nil",
