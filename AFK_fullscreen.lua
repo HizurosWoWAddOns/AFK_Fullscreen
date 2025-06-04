@@ -287,6 +287,16 @@ local function DataBrokerInit()
 	end
 end
 
+local function SetTimer(self)
+	local t,prev = time(),afkfullscreenCharDB.LoggedOutWhileAFK;
+	if type(prev)=="table" and t-prev[1]<=20 then -- 20 sec for a reload? should be enough!?
+		self.timer = prev[2]; -- add old value saved before reload
+		return;
+	end
+	self.timer = t-1;
+end
+
+
 -------------------------------------------------
 -- model mixin functions
 -------------------------------------------------
@@ -506,6 +516,7 @@ function AFKFullscreenFrameMixin:OnLoad()
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("PLAYER_FLAGS_CHANGED");
 	self:RegisterEvent("PLAYER_REGEN_DISABLED");
+	self:RegisterEvent("PLAYER_LOGOUT");
 	self:RegisterEvent("CINEMATIC_START");
 	self:RegisterEvent("CINEMATIC_STOP");
 	self:RegisterEvent("PLAY_MOVIE");
@@ -528,7 +539,8 @@ function AFKFullscreenFrameMixin:OnShow()
 		self.FullScreenWarning:SetShown(showFullscreen);
 	end
 
-	self.timer=time()-1;
+	SetTimer(self)
+
 	self.elapse=1;
 	self.PanelPlayerModel:Show();
 	if WOW_PROJECT_ID~=WOW_PROJECT_MAINLINE then
@@ -595,6 +607,7 @@ function AFKFullscreenFrameMixin:OnHide()
 		ticker:Cancel();
 		ticker = nil;
 	end
+	self.timer = nil;
 end
 
 function AFKFullscreenFrameMixin:OnEvent(event, ...)
@@ -620,12 +633,17 @@ function AFKFullscreenFrameMixin:OnEvent(event, ...)
 		self:UnregisterEvent(event);
 	elseif event=="PLAYER_ENTERING_WORLD" or event=="PLAYER_FLAGS_CHANGED" then
 		C_Timer.After(0.314159,function()
+			if not UnitIsAFK("player") then
+				afkfullscreenCharDB.LoggedOutWhileAFK = nil;
+			end
 			CheckAFK(self,event=="PLAYER_ENTERING_WORLD");
 		end);
 	elseif event=="PLAYER_REGEN_DISABLED" then
 		securecall("SetUIVisibility",true);
 	elseif self:IsVisible() and (event=="CINEMATIC_START" or event=="CINEMATIC_STOP" or event=="PLAY_MOVIE") then
 		updatePanelPosition();
+	elseif event=="PLAYER_LOGOUT" and UnitIsAFK("player") then
+		afkfullscreenCharDB.LoggedOutWhileAFK = {(time()), self.timer};
 	end
 end
 
