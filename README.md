@@ -1,5 +1,5 @@
 # AFK Fullscreen warning (WoW AddOn)
-![Build](https://github.com/HizurosWoWAddOns/AFK_Fullscreen/actions/workflows/bigwigsmods-packager.yml/badge.svg)
+![Build](https://img.shields.io/github/actions/workflow/status/HizurosWoWAddOns/AFK_Fullscreen/packager.yml?style=flat-square)
 ![Tag](https://img.shields.io/github/v/tag/HizurosWoWAddOns/AFK_Fullscreen?style=flat-square)
 ![Downloads](https://img.shields.io/github/downloads/HizurosWoWAddOns/AFK_Fullscreen/total?style=flat-square)
 ![Downloads](https://img.shields.io/github/downloads/HizurosWoWAddOns/AFK_Fullscreen/latest/total?style=flat-square)
