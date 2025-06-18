@@ -21,6 +21,8 @@ local LDB_Object,LDB = nil,LibStub("LibDataBroker-1.1");
 local LDBI = LibStub("LibDBIcon-1.0", true);
 local faction = UnitFactionGroup("player")
 local LT = LibStub("LibTime-1.0");
+ns.LSM = LibStub("LibSharedMedia-3.0")
+local soundHandle,alertSoundTicker
 
 
 -------------------------------------------------
@@ -296,6 +298,86 @@ local function SetTimer(self)
 	self.timer = t-1;
 end
 
+
+-------------------------------------------------
+-- alert sound functions
+-------------------------------------------------
+
+local function AlertSoundExecute(sound,isSoundKit)
+	local soundType,willPlay = type(sound),nil;
+
+	if isSoundKit then
+		willPlay, soundHandle = PlaySound(sound,afkfullscreenDB.sound_channel)
+	elseif (soundType=="string" and sound~="") or (soundType=="number" and sound>0) then
+		willPlay, soundHandle = PlaySoundFile(sound,afkfullscreenDB.sound_channel)
+	end
+
+	return willPlay;
+end
+
+local function AlertSoundStart(one_time)
+	if not afkfullscreenDB.sound_enabled then return end
+
+	local soundSource = afkfullscreenDB.sound_source;
+	local soundObject = afkfullscreenDB["sound_"..soundSource];
+	local soundPathOrFileID,soundKitId,willPlay = nil,nil,nil;
+
+	ns:debug("<AlertSound>",soundSource,soundObject)
+
+	if soundSource=="file" and soundObject then
+		soundPathOrFileID = tonumber(soundObject);
+		if soundPathOrFileID==nil and type(soundObject)=="string" and soundObject~="" then
+			soundPathOrFileID = soundObject;
+		end
+--@do-not-package@
+	--elseif soundSource=="list" then
+		--soundPathOrFileID =
+--@end-do-not-package@
+	elseif soundSource=="sk" then
+		local id = SOUNDKIT[soundObject] or tonumber(soundObject) or nil;
+		if id and (GetSoundEntryCount(id) or 0)>0 then
+			soundKitId = id;
+--@do-not-package@
+		else
+			ns:debugPrint("<AlertSound>","<Error>","invalid id, no sound entries found",soundObject)
+--@end-do-not-package@
+		end
+	elseif soundSource=="sm" then
+		local path = ns.LSM:Fetch("sound",soundObject)
+		if path then
+			soundPathOrFileID = path;
+		end
+	end
+
+	if (soundKitId or soundPathOrFileID) and AlertSoundExecute(soundKitId or soundPathOrFileID,soundKitId~=nil)  then
+		if not alertSoundTicker and not one_time then
+			alertSoundTicker = C_Timer.NewTicker(afkfullscreenDB.sound_interval,function()
+				AlertSoundExecute(soundKitId or soundPathOrFileID,soundKitId~=nil)
+			end)
+		end
+		willPlay = true;
+	end
+
+--@do-not-package@
+	if (soundKitId or soundPathOrFileID) then
+		ns:debugPrint("<AlertSound>",not willPlay and "<Error>wont play afk sound" or "is playing",soundSource,soundObject,soundKitId or soundPathOrFileID)
+	end
+--@end-do-not-package@
+	return willPlay
+end
+
+local function AlertSoundStop()
+	if alertSoundTicker then
+		alertSoundTicker:Cancel();
+		alertSoundTicker=nil;
+	end
+end
+
+ns.AlertSound404 = false;
+function ns.AlertSoundStart() -- for options
+	ns.AlertSound404 = not AlertSoundStart(true);
+	ns:debugPrint("AlertSound",ns.AlertSound404)
+end
 
 -------------------------------------------------
 -- model mixin functions
@@ -587,6 +669,9 @@ function AFKFullscreenFrameMixin:OnShow()
 
 	self.PanelBackgroundModel:SetShown(self.PanelBackgroundModel.SetToShow);
 
+	--ns:debugPrint("AFK>AlertSound.Play")
+	AlertSoundStart()
+
 	if not ticker then
 		ticker = C_Timer.NewTicker(1,TickerFunc);
 		TickerFunc(ticker);
@@ -603,6 +688,7 @@ function AFKFullscreenFrameMixin:OnHide()
 		self.PanelClockModel:Hide();
 	end
 	self.PanelBackgroundModel:Hide();
+	AlertSoundStop();
 	if ticker then
 		ticker:Cancel();
 		ticker = nil;

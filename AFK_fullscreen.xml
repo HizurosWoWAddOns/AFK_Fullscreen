@@ -6,6 +6,7 @@
 	<Script file="localizations.workfile.lua"/>
 	<!--@end-do-not-package@-->
 	<Script file="AFK_fullscreen.lua" />
+	<Script file="sounds.lua" />
 	<Script file="options.lua"/>
 	<Script file="skins.lua"/>
 

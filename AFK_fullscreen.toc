@@ -33,6 +33,7 @@ libs\AceConfig-3.0\AceConfig-3.0.xml
 libs\LibDataBroker-1.1\LibDataBroker-1.1.lua
 libs\LibDBIcon-1.0\LibDBIcon-1.0.lua
 libs\LibColors-1.0\LibColors-1.0.xml
+libs\LibSharedMedia-3.0\LibSharedMedia-3.0.lua
 libs\LibTime-1.0\LibTime-1.0.xml
 libs\HizurosSharedTools\HizurosSharedTools.lua
 

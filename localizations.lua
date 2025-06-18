@@ -2,7 +2,7 @@
 local L, addon, ns = {},...;
 ns.L = setmetatable(L,{
 	__index=function(t,k)
-		local n=tostring(k);
+		local n=tostring(k):gsub("^SOUNDKIT%.","");
 		rawset(t,k,n);
 		return n;
 	end

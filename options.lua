@@ -8,8 +8,6 @@ local C = WrapTextInColorCode
 local Mage = RAID_CLASS_COLORS.MAGE.colorStr;
 local soundSources = {file=L["File"],lsm="LibSharedMedia"};
 local faction = UnitFactionGroup("player")
-ns.soundChannels = {};
-ns.soundFiles = {customfile=L["Use custom file"]};
 local fullscreen_textures = {
 	["none"] = ADDON_DISABLED,
 	["flat"] = L["Flat"],
@@ -21,10 +19,6 @@ local infopanelVertPosition = {
 	top = L["Top"],
 	middle = L["Middle"],
 	bottom = L["Bottom"]
-};
-local sound_channels = {
-	master = "Master",
-	sfx = "SFX"
 };
 local dbDefaults = {
 	hide_ui = true,
@@ -55,7 +49,12 @@ local dbDefaults = {
 	--[[ alertsound entries ]]
 	sound_enabled = false,
 	sound_channel = "SFX",
-	sound_file = "",
+	sound_interval = 2,
+	sound_source = "file",
+	sound_sm = "",
+	sound_sk = "",
+	sound_file = 1129275,
+	sound_list = "",
 };
 
 local dbDefaultsChar = {
@@ -74,6 +73,22 @@ local function listSkins(info)
 		list[k] = k;
 	end
 	return list;
+end
+
+local soundObjectKey = {
+	sound_sk="sk",
+	sound_sk_desc = "sk",
+
+	sound_sm="sm",
+	sound_sm_desc = "sm",
+
+	sound_file="file",
+	sound_file_desc="file",
+	sound_file_url1="file",
+	sound_file_url1_desc="file",
+}
+local function isAlertSoundDisabled()
+	return not afkfullscreenDB.sound_enabled;
 end
 
 local function optionsFunc(info,...)
@@ -105,10 +120,9 @@ local function optionsFunc(info,...)
 	return afkfullscreenDB[key];
 end
 
-local function openSubTree()
-	ACD:SelectGroup(addon,"infopanel");
-	ACD:SelectGroup(addon,"general");
-	ns.options.args.general.args.minimap.disabled = nil;
+local function hiddenBySoundSource(info)
+	local key = soundObjectKey[info[#info]];
+	return key and afkfullscreenDB.sound_source and afkfullscreenDB.sound_source~=key;
 end
 
 local options = {
@@ -116,6 +130,7 @@ local options = {
 	name = L[addon],
 	get = optionsFunc,
 	set = optionsFunc,
+	childGroups = "tab",
 	args = {
 		minimap = {
 			type = "toggle", order = 1,
@@ -139,7 +154,7 @@ local options = {
 		},
 
 		fullscreen = {
-			type = "group", order = 20, inline = true,
+			type = "group", order = 20, --inline = true,
 			name = L["FullscreenOptions"],
 			args = {
 				hide_ui = {
@@ -217,7 +232,7 @@ local options = {
 		},
 
 		skins = {
-			type = "group", order = 60, inline = true,
+			type = "group", order = 30, --inline = true,
 			name = L["InfoPanelAppearance"],
 			args = {
 				infopanel_skin = {
@@ -318,27 +333,135 @@ local options = {
 				}
 			}
 		},
-
-		sound = {
-			type = "group", order = 100, inline = true, hidden = true, -- coming soon
-			name = L["Alert sound options"],
+		alertsound = {
+			type = "group", order = 50, --inline = true, -- coming soon
+			name = L["AlertSoundOptions"],
 			args = {
+				info = {
+					type = "description", fontSize="medium", order = 1,
+					name = L["AlertSoundDesc"]
+				},
 				sound_enabled = {
-					type = "toggle", order = 1,
-					name = L["Enable alert sound"]
+					type = "toggle", order = 2,
+					name = ENABLE
 				},
 				sound_channel = {
-					type = "select", order = 2,
-					name = L["Select output channel"],
-					values=ns.soundChannels
+					type = "select", order = 3, --width = "double",
+					name = L["AlertSoundChannel"], desc = L["AlertSoundChannelDesc"],
+					values={
+						["0:Master"] = MASTER_VOLUME,
+						["1:SFX"] = ENABLE_SOUNDFX,
+						--["2:Error"] = ENABLE_ERROR_SPEECH,
+						--["3:Emote"] = ENABLE_EMOTE_SOUNDS,
+						--["4:Pet"] = ENABLE_PET_SOUNDS,
+						["5:Music"] = MUSIC_VOLUME,
+						["6:Ambience"] = ENABLE_AMBIENCE,
+					},
+					disabled = isAlertSoundDisabled,
 				},
-				sound_file = {
-					type = "select", order = 3, width = "double",
-					name = L["Select alert sound"],
-					values=ns.soundFiles,
+				sound_interval = {
+					type = "range", order = 4, width = "full",
+					name = L["AlertSoundInterval"], desc = L["AlertSoundIntervalDesc"],
+					min = 0.1, max=300, step=0.02,
+					disabled = isAlertSoundDisabled,
+				},
+				sound_options = {
+					type = "group", order = 20, inline = true,
+					name = L["AlertSoundChoose"],
+					disabled = isAlertSoundDisabled,
+					args = {
+						sound_source = {
+							type = "select", order = 20, --width = "double",
+							name = L["AlertSoundSource"], desc = L["AlertSoundSourceDesc"],
+							--name = L["AlertSoundChooseFrom"], desc = L["AlertSoundChooseFromDesc"],
+							values = {
+								--list = L["AlertSoundbyList"],
+								file = L["AlertSoundByFile"],
+								sk = L["AlertSoundBySK"],
+								sm = L["AlertSoundBySM"],
+							}
+						},
+
+						sound_sm = {
+							type = "select", order = 21, width = "double",
+							name = L["AlertSoundSM"],
+							descStyle = "inline",
+							values = ns.GetSoundsFromSM,
+							hidden = hiddenBySoundSource
+						},
+						sound_sm_desc = {
+							type = "description", order=22, fontSize="medium",
+							name = L["AlertSoundSMDesc"],
+							hidden = hiddenBySoundSource
+						},
+
+						sound_sk = {
+							type = "select", order = 21, width = "double",
+							name = L["AlertSoundSK"], desc = L["AlertSoundSK"],
+							values = ns.GetSoundsFromSK,
+							hidden = hiddenBySoundSource
+						},
+						sound_sk_desc = {
+							type = "description", order=22, fontSize="medium",
+							name = L["AlertSoundSKDesc"],
+							hidden = hiddenBySoundSource
+						},
+
+						sound_file = {
+							type = "input", order = 21, width = "double",
+							name = L["AlertSoundFile"],
+							hidden = hiddenBySoundSource
+						},
+						sound_file_desc = {
+							type = "description", order=22, fontSize="medium",
+							name = L["AlertSoundFileDesc"],
+							hidden = hiddenBySoundSource
+						},
+						sound_file_url1 = {
+							type = "input", order = 23, width="double",
+							name = L["AlertSoundURL1"],
+							get = function() return "https://www.wowhead.com/sounds" end,
+							set = function() end,
+							hidden = hiddenBySoundSource
+						},
+						sound_file_url1_desc = {
+							type = "description", order = 24, fontSize="medium",
+							name = L["AlertSoundURL1Desc"],
+							hidden = hiddenBySoundSource
+						},
+
+						sound_test = {
+							type = "execute", order = 99,
+							name = TEST_STRING_IGNORE_1,
+							func = ns.AlertSoundStart
+						},
+						sound_test_info = {
+							type = "description", order = 100, fontSize="large", width="double",
+							name = L["AlertSoundNotFound"],
+							hidden = function()
+								return not ns.AlertSound404;
+							end
+						},
+--@do-not-package@
+						--[[
+						sound_list_group = {
+							type = "select", order = 21,
+							name = L["AlertSoundSelectGroup"], --desc = L[""],
+							values = ns.GetSoundsFromList,
+							hidden = hiddenBySoundSource
+						},
+						sound_list = {
+							type = "select", order = 22, --width = "double",
+							name = L["AlertSoundSelect"], --desc = L[""],
+							values = ns.GetSoundsFromList,
+							hidden = hiddenBySoundSource
+						},
+						--]]
+--@end-do-not-package@
+					}
 				}
 			}
-		},
+		}
 	}
 };
 
