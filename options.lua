@@ -432,7 +432,7 @@ local options = {
 
 						sound_test = {
 							type = "execute", order = 99,
-							name = TEST_STRING_IGNORE_1,
+							name = TEST_STRING_IGNORE_1 or TEST_BUILD or "Test",
 							func = ns.AlertSoundStart
 						},
 						sound_test_info = {
