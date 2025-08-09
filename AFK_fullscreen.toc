@@ -1,6 +1,4 @@
-## Interface: 110105
-## Interface-Cata: 40402
-## Interface-Classic: 11507
+## Interface: 110200 50500 11507
 ## Title: AFK Fullscreen Warning
 ## Notes: Signelice your character are afk as fullscreen info like low health or out of control warn.
 ## Author: Hizuro
