@@ -102,6 +102,14 @@ local function optionsFunc(info,...)
 	elseif value~=nil then
 		if value2~=nil then
 			value = {...}; -- color table
+		elseif type(value)=="string" then
+			-- remove whitespaces
+			local v = nil;
+			v = tonumber(value);
+			if not v then
+				v = strtrim(value);
+			end
+			value = v;
 		end
 		afkfullscreenDB[key] = value;
 		if AFKFullscreenDemoFrame:IsShown() then

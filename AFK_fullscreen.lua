@@ -322,12 +322,11 @@ local function AlertSoundStart(one_time)
 	local soundObject = afkfullscreenDB["sound_"..soundSource];
 	local soundPathOrFileID,soundKitId,willPlay = nil,nil,nil;
 
-	ns:debug("<AlertSound>",soundSource,soundObject)
 
 	if soundSource=="file" and soundObject then
 		soundPathOrFileID = tonumber(soundObject);
 		if soundPathOrFileID==nil and type(soundObject)=="string" and soundObject~="" then
-			soundPathOrFileID = soundObject;
+			soundPathOrFileID = soundObject:trim();
 		end
 --@do-not-package@
 	--elseif soundSource=="list" then
@@ -358,11 +357,6 @@ local function AlertSoundStart(one_time)
 		willPlay = true;
 	end
 
---@do-not-package@
-	if (soundKitId or soundPathOrFileID) then
-		ns:debugPrint("<AlertSound>",not willPlay and "<Error>wont play afk sound" or "is playing",soundSource,soundObject,soundKitId or soundPathOrFileID)
-	end
---@end-do-not-package@
 	return willPlay
 end
 
@@ -376,7 +370,6 @@ end
 ns.AlertSound404 = false;
 function ns.AlertSoundStart() -- for options
 	ns.AlertSound404 = not AlertSoundStart(true);
-	ns:debugPrint("AlertSound",ns.AlertSound404)
 end
 
 -------------------------------------------------
@@ -669,7 +662,6 @@ function AFKFullscreenFrameMixin:OnShow()
 
 	self.PanelBackgroundModel:SetShown(self.PanelBackgroundModel.SetToShow);
 
-	--ns:debugPrint("AFK>AlertSound.Play")
 	AlertSoundStart()
 
 	if not ticker then
