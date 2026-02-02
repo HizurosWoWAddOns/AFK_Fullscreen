@@ -306,10 +306,16 @@ end
 local function AlertSoundExecute(sound,isSoundKit)
 	local soundType,willPlay = type(sound),nil;
 
+	-- Extract channel name from "0:Master" format to just "Master"
+	local channel = afkfullscreenDB.sound_channel;
+	if channel and channel:find(":") then
+		channel = channel:match(":(.+)$");
+	end
+
 	if isSoundKit then
-		willPlay, soundHandle = PlaySound(sound,afkfullscreenDB.sound_channel)
+		willPlay, soundHandle = PlaySound(sound,channel)
 	elseif (soundType=="string" and sound~="") or (soundType=="number" and sound>0) then
-		willPlay, soundHandle = PlaySoundFile(sound,afkfullscreenDB.sound_channel)
+		willPlay, soundHandle = PlaySoundFile(sound,channel)
 	end
 
 	return willPlay;
