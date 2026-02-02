@@ -50,6 +50,7 @@ local dbDefaults = {
 	sound_enabled = false,
 	sound_channel = "SFX",
 	sound_interval = 2,
+	sound_delay = 0, -- delay in seconds before playing sound (0 = immediately, max 1800 = 30 minutes)
 	sound_source = "file",
 	sound_sm = "",
 	sound_sk = "",
@@ -371,6 +372,12 @@ local options = {
 					type = "range", order = 4, width = "full",
 					name = L["AlertSoundInterval"], desc = L["AlertSoundIntervalDesc"],
 					min = 0.1, max=300, step=0.02,
+					disabled = isAlertSoundDisabled,
+				},
+				sound_delay = {
+					type = "range", order = 5, width = "full",
+					name = L["AlertSoundDelay"], desc = L["AlertSoundDelayDesc"],
+					min = 0, max=1800, step=1,
 					disabled = isAlertSoundDisabled,
 				},
 				sound_options = {

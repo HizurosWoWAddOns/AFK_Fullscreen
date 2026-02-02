@@ -8,7 +8,7 @@ local L = ns.L;
 ns.debugMode = "@project-version@"=="@".."project-version".."@";
 LibStub("HizurosSharedTools").RegisterPrint(ns,addon,"AFK");
 
-local media,ticker,demoticker = "Interface\\AddOns\\"..addon.."\\media\\";
+local media,ticker,demoticker,alertSoundDelayTimer = "Interface\\AddOns\\"..addon.."\\media\\";
 local PlayerPositionFix = {
 	{0,0.00,-0.08}, -- unknown
 	{0,0.05,-0.10}, -- male
@@ -354,13 +354,25 @@ local function AlertSoundStart(one_time)
 		end
 	end
 
-	if (soundKitId or soundPathOrFileID) and AlertSoundExecute(soundKitId or soundPathOrFileID,soundKitId~=nil)  then
-		if not alertSoundTicker and not one_time then
-			alertSoundTicker = C_Timer.NewTicker(afkfullscreenDB.sound_interval,function()
-				AlertSoundExecute(soundKitId or soundPathOrFileID,soundKitId~=nil)
-			end)
+	local function StartSound()
+		if (soundKitId or soundPathOrFileID) and AlertSoundExecute(soundKitId or soundPathOrFileID,soundKitId~=nil)  then
+			if not alertSoundTicker and not one_time then
+				alertSoundTicker = C_Timer.NewTicker(afkfullscreenDB.sound_interval,function()
+					AlertSoundExecute(soundKitId or soundPathOrFileID,soundKitId~=nil)
+				end)
+			end
+			willPlay = true;
 		end
-		willPlay = true;
+	end
+
+	-- Check if delay is configured
+	local delay = afkfullscreenDB.sound_delay or 0;
+	if delay > 0 and not one_time then
+		-- Start sound after delay
+		alertSoundDelayTimer = C_Timer.NewTimer(delay, StartSound);
+	else
+		-- Start sound immediately
+		StartSound();
 	end
 
 	return willPlay
@@ -370,6 +382,10 @@ local function AlertSoundStop()
 	if alertSoundTicker then
 		alertSoundTicker:Cancel();
 		alertSoundTicker=nil;
+	end
+	if alertSoundDelayTimer then
+		alertSoundDelayTimer:Cancel();
+		alertSoundDelayTimer=nil;
 	end
 end
 
