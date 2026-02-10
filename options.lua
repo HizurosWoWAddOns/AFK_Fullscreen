@@ -47,15 +47,7 @@ local dbDefaults = {
 	infopanel_skin = "Etherreal",
 
 	--[[ alertsound entries ]]
-	sound_enabled = false,
-	sound_channel = "SFX",
-	sound_interval = 2,
-	sound_delay = 0, -- delay in seconds before playing sound (0 = immediately, max 1800 = 30 minutes)
-	sound_source = "file",
-	sound_sm = "",
-	sound_sk = "",
-	sound_file = 1129275,
-	sound_list = "",
+	alarms = {},
 };
 
 local dbDefaultsChar = {
@@ -343,139 +335,10 @@ local options = {
 			}
 		},
 		alertsound = {
-			type = "group", order = 50, --inline = true, -- coming soon
+			type = "group", order = 50,
 			name = L["AlertSoundOptions"],
-			args = {
-				info = {
-					type = "description", fontSize="medium", order = 1,
-					name = L["AlertSoundDesc"]
-				},
-				sound_enabled = {
-					type = "toggle", order = 2,
-					name = ENABLE
-				},
-				sound_channel = {
-					type = "select", order = 3, --width = "double",
-					name = L["AlertSoundChannel"], desc = L["AlertSoundChannelDesc"],
-					values={
-						["0:Master"] = MASTER_VOLUME,
-						["1:SFX"] = ENABLE_SOUNDFX,
-						--["2:Error"] = ENABLE_ERROR_SPEECH,
-						--["3:Emote"] = ENABLE_EMOTE_SOUNDS,
-						--["4:Pet"] = ENABLE_PET_SOUNDS,
-						["5:Music"] = MUSIC_VOLUME,
-						["6:Ambience"] = ENABLE_AMBIENCE,
-					},
-					disabled = isAlertSoundDisabled,
-				},
-				sound_interval = {
-					type = "range", order = 4, width = "full",
-					name = L["AlertSoundInterval"], desc = L["AlertSoundIntervalDesc"],
-					min = 0.1, max=300, step=0.02,
-					disabled = isAlertSoundDisabled,
-				},
-				sound_delay = {
-					type = "range", order = 5, width = "full",
-					name = L["AlertSoundDelay"], desc = L["AlertSoundDelayDesc"],
-					min = 0, max=1800, step=1,
-					disabled = isAlertSoundDisabled,
-				},
-				sound_options = {
-					type = "group", order = 20, inline = true,
-					name = L["AlertSoundChoose"],
-					disabled = isAlertSoundDisabled,
-					args = {
-						sound_source = {
-							type = "select", order = 20, --width = "double",
-							name = L["AlertSoundSource"], desc = L["AlertSoundSourceDesc"],
-							--name = L["AlertSoundChooseFrom"], desc = L["AlertSoundChooseFromDesc"],
-							values = {
-								--list = L["AlertSoundbyList"],
-								file = L["AlertSoundByFile"],
-								sk = L["AlertSoundBySK"],
-								sm = L["AlertSoundBySM"],
-							}
-						},
-
-						sound_sm = {
-							type = "select", order = 21, width = "double",
-							name = L["AlertSoundSM"],
-							descStyle = "inline",
-							values = ns.GetSoundsFromSM,
-							hidden = hiddenBySoundSource
-						},
-						sound_sm_desc = {
-							type = "description", order=22, fontSize="medium",
-							name = L["AlertSoundSMDesc"],
-							hidden = hiddenBySoundSource
-						},
-
-						sound_sk = {
-							type = "select", order = 21, width = "double",
-							name = L["AlertSoundSK"], desc = L["AlertSoundSK"],
-							values = ns.GetSoundsFromSK,
-							hidden = hiddenBySoundSource
-						},
-						sound_sk_desc = {
-							type = "description", order=22, fontSize="medium",
-							name = L["AlertSoundSKDesc"],
-							hidden = hiddenBySoundSource
-						},
-
-						sound_file = {
-							type = "input", order = 21, width = "double",
-							name = L["AlertSoundFile"],
-							hidden = hiddenBySoundSource
-						},
-						sound_file_desc = {
-							type = "description", order=22, fontSize="medium",
-							name = L["AlertSoundFileDesc"],
-							hidden = hiddenBySoundSource
-						},
-						sound_file_url1 = {
-							type = "input", order = 23, width="double",
-							name = L["AlertSoundURL1"],
-							get = function() return "https://www.wowhead.com/sounds" end,
-							set = function() end,
-							hidden = hiddenBySoundSource
-						},
-						sound_file_url1_desc = {
-							type = "description", order = 24, fontSize="medium",
-							name = L["AlertSoundURL1Desc"],
-							hidden = hiddenBySoundSource
-						},
-
-						sound_test = {
-							type = "execute", order = 99,
-							name = TEST_STRING_IGNORE_1 or TEST_BUILD or "Test",
-							func = ns.AlertSoundStart
-						},
-						sound_test_info = {
-							type = "description", order = 100, fontSize="large", width="double",
-							name = L["AlertSoundNotFound"],
-							hidden = function()
-								return not ns.AlertSound404;
-							end
-						},
---@do-not-package@
-						--[[
-						sound_list_group = {
-							type = "select", order = 21,
-							name = L["AlertSoundSelectGroup"], --desc = L[""],
-							values = ns.GetSoundsFromList,
-							hidden = hiddenBySoundSource
-						},
-						sound_list = {
-							type = "select", order = 22, --width = "double",
-							name = L["AlertSoundSelect"], --desc = L[""],
-							values = ns.GetSoundsFromList,
-							hidden = hiddenBySoundSource
-						},
-						--]]
---@end-do-not-package@
-					}
-				}
-			}
+			childGroups = "tree",
+			args = {} -- Will be populated dynamically in registerOptions
 		}
 	}
 };
@@ -509,6 +372,48 @@ function ns.dbIntegrityCheck()
 	if afkfullscreenDB.show_fullscreenwarning~=nil then
 		afkfullscreenDB.show_fullscreenwarning = nil;
 	end
+
+	-- Migration: Convert old single alarm structure to new multi-alarm array
+	if afkfullscreenDB.sound_enabled~=nil or afkfullscreenDB.sound_interval~=nil then
+		-- Old structure detected, migrate to new format
+		local oldAlarm = {
+			enabled = afkfullscreenDB.sound_enabled or false,
+			sound_source = afkfullscreenDB.sound_source or "file",
+			sound_value = nil,
+			delay = afkfullscreenDB.sound_delay or 0,
+			repeat_count = 0, -- old system was infinite
+			repeat_interval = afkfullscreenDB.sound_interval or 2,
+			channel = afkfullscreenDB.sound_channel or "1:SFX",
+		};
+
+		-- Get the sound value from the appropriate source
+		if oldAlarm.sound_source == "file" then
+			oldAlarm.sound_value = afkfullscreenDB.sound_file or 1129275;
+		elseif oldAlarm.sound_source == "sk" then
+			oldAlarm.sound_value = afkfullscreenDB.sound_sk or "";
+		elseif oldAlarm.sound_source == "sm" then
+			oldAlarm.sound_value = afkfullscreenDB.sound_sm or "";
+		end
+
+		-- Add as first alarm
+		afkfullscreenDB.alarms = {oldAlarm};
+
+		-- Clean up old settings
+		afkfullscreenDB.sound_enabled = nil;
+		afkfullscreenDB.sound_interval = nil;
+		afkfullscreenDB.sound_delay = nil;
+		afkfullscreenDB.sound_source = nil;
+		afkfullscreenDB.sound_file = nil;
+		afkfullscreenDB.sound_sk = nil;
+		afkfullscreenDB.sound_sm = nil;
+		afkfullscreenDB.sound_list = nil;
+		-- Keep sound_channel as it might be used elsewhere
+	end
+
+	-- Ensure alarms table exists and is an array
+	if type(afkfullscreenDB.alarms) ~= "table" then
+		afkfullscreenDB.alarms = {};
+	end
 end
 
 function ns.toggleOptions()
@@ -521,6 +426,186 @@ function ns.toggleOptions()
 end
 
 function ns.registerOptions()
+	-- Build dynamic alarm options
+	local function buildAlarmOptions()
+		local args = {
+			info = {
+				type = "description", fontSize="medium", order = 1,
+				name = L["AlertSoundDesc"]
+			},
+			add_alarm = {
+				type = "execute", order = 2,
+				name = L["AddAlarm"],
+				func = function()
+					local newAlarm = {
+						enabled = true,
+						sound_source = "file",
+						sound_value = 1129275,
+						delay = 0,
+						repeat_count = 0,
+						repeat_interval = 2,
+						channel = "1:SFX",
+					};
+					tinsert(afkfullscreenDB.alarms, newAlarm);
+					-- Rebuild options
+					buildAlarmOptions();
+					AC:RegisterOptionsTable(addon, options);
+					-- Refresh UI if open
+					if ACD.OpenFrames[addon] then
+						ACD:SelectGroup(addon, "alertsound");
+					end
+				end
+			},
+			no_alarms = {
+				type = "description", fontSize="large", order = 3,
+				name = L["NoAlarmsConfigured"],
+				hidden = function() return #afkfullscreenDB.alarms > 0 end
+			}
+		};
+
+		-- Generate options for each alarm
+		for i = 1, #afkfullscreenDB.alarms do
+			local alarmKey = "alarm_" .. i;
+			args[alarmKey] = {
+				type = "group",
+				order = 10 + i,
+				name = L["Alarm"] .. " " .. i,
+				args = {
+					enabled = {
+						type = "toggle", order = 1,
+						name = ENABLE,
+						get = function() return afkfullscreenDB.alarms[i].enabled end,
+						set = function(_, value) afkfullscreenDB.alarms[i].enabled = value end
+					},
+					remove = {
+						type = "execute", order = 2,
+						name = L["RemoveAlarm"],
+						confirm = true,
+						func = function()
+							-- Stop the alarm if it's running
+							if ns.AlertSoundStopForAlarm then
+								ns.AlertSoundStopForAlarm(i);
+							end
+							-- Remove from array
+							tremove(afkfullscreenDB.alarms, i);
+							-- Rebuild options
+							buildAlarmOptions();
+							AC:RegisterOptionsTable(addon, options);
+							-- Refresh UI
+							if ACD.OpenFrames[addon] then
+								ACD:SelectGroup(addon, "alertsound");
+							end
+						end
+					},
+					channel = {
+						type = "select", order = 10, width = "double",
+						name = L["AlertSoundChannel"],
+						desc = L["AlertSoundChannelDesc"],
+						values = {
+							["0:Master"] = MASTER_VOLUME,
+							["1:SFX"] = ENABLE_SOUNDFX,
+							["5:Music"] = MUSIC_VOLUME,
+							["6:Ambience"] = ENABLE_AMBIENCE,
+						},
+						get = function() return afkfullscreenDB.alarms[i].channel end,
+						set = function(_, value) afkfullscreenDB.alarms[i].channel = value end
+					},
+					sound_source = {
+						type = "select", order = 20, width = "double",
+						name = L["AlertSoundSource"],
+						desc = L["AlertSoundSourceDesc"],
+						values = {
+							file = L["AlertSoundByFile"],
+							sk = L["AlertSoundBySK"],
+							sm = L["AlertSoundBySM"],
+						},
+						get = function() return afkfullscreenDB.alarms[i].sound_source end,
+						set = function(_, value) afkfullscreenDB.alarms[i].sound_source = value end
+					},
+					sound_value_file = {
+						type = "input", order = 21, width = "double",
+						name = L["AlertSoundFile"],
+						desc = L["AlertSoundFileDesc"],
+						get = function() return tostring(afkfullscreenDB.alarms[i].sound_value or "") end,
+						set = function(_, value)
+							local v = tonumber(value) or strtrim(value);
+							afkfullscreenDB.alarms[i].sound_value = v;
+						end,
+						hidden = function() return afkfullscreenDB.alarms[i].sound_source ~= "file" end
+					},
+					sound_file_url1 = {
+						type = "input", order = 22, width="double",
+						name = L["AlertSoundURL1"],
+						desc = L["AlertSoundURL1Desc"],
+						get = function() return "https://www.wowhead.com/sounds" end,
+						set = function() end,
+						hidden = function() return afkfullscreenDB.alarms[i].sound_source ~= "file" end
+					},
+					sound_value_sk = {
+						type = "select", order = 21, width = "double",
+						name = L["AlertSoundSK"],
+						desc = L["AlertSoundSKDesc"],
+						values = ns.GetSoundsFromSK,
+						get = function() return afkfullscreenDB.alarms[i].sound_value end,
+						set = function(_, value) afkfullscreenDB.alarms[i].sound_value = value end,
+						hidden = function() return afkfullscreenDB.alarms[i].sound_source ~= "sk" end
+					},
+					sound_value_sm = {
+						type = "select", order = 21, width = "double",
+						name = L["AlertSoundSM"],
+						desc = L["AlertSoundSMDesc"],
+						values = ns.GetSoundsFromSM,
+						get = function() return afkfullscreenDB.alarms[i].sound_value end,
+						set = function(_, value) afkfullscreenDB.alarms[i].sound_value = value end,
+						hidden = function() return afkfullscreenDB.alarms[i].sound_source ~= "sm" end
+					},
+					test = {
+						type = "execute", order = 30,
+						name = TEST_STRING_IGNORE_1 or TEST_BUILD or "Test",
+						func = function() ns.AlertSoundStart(i) end
+					},
+					delay = {
+						type = "range", order = 40, width = "full",
+						name = L["AlertSoundDelay"],
+						desc = L["AlertSoundDelayDesc"],
+						min = 0, max = 1800, step = 1,
+						get = function() return afkfullscreenDB.alarms[i].delay end,
+						set = function(_, value) afkfullscreenDB.alarms[i].delay = value end
+					},
+					repeat_count = {
+						type = "input", order = 50,
+						name = L["RepeatCount"],
+						desc = L["RepeatCountDesc"],
+						get = function() return tostring(afkfullscreenDB.alarms[i].repeat_count or 0) end,
+						set = function(_, value)
+							local v = tonumber(value) or 0;
+							if v < 0 then v = 0 end
+							afkfullscreenDB.alarms[i].repeat_count = v;
+						end
+					},
+					repeat_interval = {
+						type = "range", order = 51, width = "full",
+						name = L["RepeatInterval"],
+						desc = L["RepeatIntervalDesc"],
+						min = 0.1, max = 300, step = 0.1,
+						get = function() return afkfullscreenDB.alarms[i].repeat_interval end,
+						set = function(_, value) afkfullscreenDB.alarms[i].repeat_interval = value end
+					},
+					test_info = {
+						type = "description", order = 100, fontSize="large", width="double",
+						name = L["AlertSoundNotFound"],
+						hidden = function() return not ns.AlertSound404 end
+					}
+				}
+			};
+		end
+
+		options.args.alertsound.args = args;
+	end
+
+	-- Build the options
+	buildAlarmOptions();
+
 	AC:RegisterOptionsTable(addon, options);
 	local opts = ACD:AddToBlizOptions(addon);
 	LibStub("HizurosSharedTools").BlizzOptions_ExpandOnShow(opts);
