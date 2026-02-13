@@ -9,6 +9,7 @@ ns.debugMode = "@project-version@"=="@".."project-version".."@";
 LibStub("HizurosSharedTools").RegisterPrint(ns,addon,"AFK");
 
 local media,ticker,demoticker = "Interface\\AddOns\\"..addon.."\\media\\";
+local alarmTimers = {}; -- alarmTimers[index] = {delayTimer, ticker, playCount}
 local PlayerPositionFix = {
 	{0,0.00,-0.08}, -- unknown
 	{0,0.05,-0.10}, -- male
@@ -22,7 +23,6 @@ local LDBI = LibStub("LibDBIcon-1.0", true);
 local faction = UnitFactionGroup("player")
 local LT = LibStub("LibTime-1.0");
 ns.LSM = LibStub("LibSharedMedia-3.0")
-local soundHandle,alertSoundTicker
 
 
 -------------------------------------------------
@@ -303,80 +303,160 @@ end
 -- alert sound functions
 -------------------------------------------------
 
-local function AlertSoundExecute(sound,isSoundKit)
-	local soundType,willPlay = type(sound),nil;
+local function AlertSoundExecuteForAlarm(alarmConfig)
+	if not alarmConfig then return false end
+
+	local soundSource = alarmConfig.sound_source;
+	local soundValue = alarmConfig.sound_value;
+	local soundPathOrFileID, soundKitId = nil, nil;
+	local soundType, willPlay = type(soundValue), nil;
 
 	-- Extract channel name from "0:Master" format to just "Master"
-	local channel = afkfullscreenDB.sound_channel;
+	local channel = alarmConfig.channel or "SFX";
 	if channel and channel:find(":") then
 		channel = channel:match(":(.+)$");
 	end
 
-	if isSoundKit then
-		willPlay, soundHandle = PlaySound(sound,channel)
-	elseif (soundType=="string" and sound~="") or (soundType=="number" and sound>0) then
-		willPlay, soundHandle = PlaySoundFile(sound,channel)
-	end
-
-	return willPlay;
-end
-
-local function AlertSoundStart(one_time)
-	if not afkfullscreenDB.sound_enabled then return end
-
-	local soundSource = afkfullscreenDB.sound_source;
-	local soundObject = afkfullscreenDB["sound_"..soundSource];
-	local soundPathOrFileID,soundKitId,willPlay = nil,nil,nil;
-
-
-	if soundSource=="file" and soundObject then
-		soundPathOrFileID = tonumber(soundObject);
-		if soundPathOrFileID==nil and type(soundObject)=="string" and soundObject~="" then
-			soundPathOrFileID = soundObject:trim();
+	-- Determine sound based on source
+	if soundSource == "file" and soundValue then
+		soundPathOrFileID = tonumber(soundValue);
+		if soundPathOrFileID == nil and type(soundValue) == "string" and soundValue ~= "" then
+			soundPathOrFileID = soundValue:trim();
 		end
---@do-not-package@
-	--elseif soundSource=="list" then
-		--soundPathOrFileID =
---@end-do-not-package@
-	elseif soundSource=="sk" then
-		local id = SOUNDKIT[soundObject] or tonumber(soundObject) or nil;
-		if id and (GetSoundEntryCount(id) or 0)>0 then
+	elseif soundSource == "sk" then
+		local id = SOUNDKIT[soundValue] or tonumber(soundValue) or nil;
+		if id and (GetSoundEntryCount(id) or 0) > 0 then
 			soundKitId = id;
 --@do-not-package@
 		else
-			ns:debugPrint("<AlertSound>","<Error>","invalid id, no sound entries found",soundObject)
+			ns:debugPrint("<AlertSound>", "<Error>", "invalid id, no sound entries found", soundValue)
 --@end-do-not-package@
 		end
-	elseif soundSource=="sm" then
-		local path = ns.LSM:Fetch("sound",soundObject)
+	elseif soundSource == "sm" then
+		local path = ns.LSM:Fetch("sound", soundValue)
 		if path then
 			soundPathOrFileID = path;
 		end
 	end
 
-	if (soundKitId or soundPathOrFileID) and AlertSoundExecute(soundKitId or soundPathOrFileID,soundKitId~=nil)  then
-		if not alertSoundTicker and not one_time then
-			alertSoundTicker = C_Timer.NewTicker(afkfullscreenDB.sound_interval,function()
-				AlertSoundExecute(soundKitId or soundPathOrFileID,soundKitId~=nil)
-			end)
+	-- Play the sound
+	if soundKitId then
+		willPlay = PlaySound(soundKitId, channel);
+	elseif (soundType == "string" and soundPathOrFileID ~= "") or (soundType == "number" and soundPathOrFileID and soundPathOrFileID > 0) then
+		willPlay = PlaySoundFile(soundPathOrFileID, channel);
+	end
+
+	return willPlay;
+end
+
+local function AlertSoundStartForAlarm(alarmIndex)
+	local alarmConfig = afkfullscreenDB.alarms[alarmIndex];
+	if not alarmConfig or not alarmConfig.enabled then return end
+
+	-- Stop any existing timer for this alarm
+	if alarmTimers[alarmIndex] then
+		if alarmTimers[alarmIndex].delayTimer then
+			alarmTimers[alarmIndex].delayTimer:Cancel();
 		end
-		willPlay = true;
+		if alarmTimers[alarmIndex].ticker then
+			alarmTimers[alarmIndex].ticker:Cancel();
+		end
 	end
 
-	return willPlay
-end
+	-- Initialize timer entry
+	alarmTimers[alarmIndex] = {
+		delayTimer = nil,
+		ticker = nil,
+		playCount = 0
+	};
 
-local function AlertSoundStop()
-	if alertSoundTicker then
-		alertSoundTicker:Cancel();
-		alertSoundTicker=nil;
+	local function StartRepeating()
+		-- Play first time
+		local played = AlertSoundExecuteForAlarm(alarmConfig);
+		if played then
+			alarmTimers[alarmIndex].playCount = 1;
+
+			-- Check if we need to repeat
+			local repeatCount = alarmConfig.repeat_count or 0;
+			local repeatInterval = alarmConfig.repeat_interval or 2;
+
+			if repeatCount == 0 or repeatCount > 1 then
+				-- Create ticker for repetition
+				alarmTimers[alarmIndex].ticker = C_Timer.NewTicker(repeatInterval, function()
+					-- Check if we've reached the limit
+					if repeatCount > 0 and alarmTimers[alarmIndex].playCount >= repeatCount then
+						-- Stop the ticker
+						if alarmTimers[alarmIndex].ticker then
+							alarmTimers[alarmIndex].ticker:Cancel();
+							alarmTimers[alarmIndex].ticker = nil;
+						end
+						return;
+					end
+
+					-- Play the sound
+					AlertSoundExecuteForAlarm(alarmConfig);
+					alarmTimers[alarmIndex].playCount = alarmTimers[alarmIndex].playCount + 1;
+				end);
+			end
+		end
+	end
+
+	-- Check if delay is configured
+	local delay = alarmConfig.delay or 0;
+	if delay > 0 then
+		-- Start sound after delay
+		alarmTimers[alarmIndex].delayTimer = C_Timer.NewTimer(delay, StartRepeating);
+	else
+		-- Start sound immediately
+		StartRepeating();
 	end
 end
 
+local function AlertSoundStopForAlarm(alarmIndex)
+	if not alarmTimers[alarmIndex] then return end
+
+	if alarmTimers[alarmIndex].delayTimer then
+		alarmTimers[alarmIndex].delayTimer:Cancel();
+	end
+	if alarmTimers[alarmIndex].ticker then
+		alarmTimers[alarmIndex].ticker:Cancel();
+	end
+
+	alarmTimers[alarmIndex] = nil;
+end
+
+local function AlertSoundStartAll()
+	for i = 1, #afkfullscreenDB.alarms do
+		AlertSoundStartForAlarm(i);
+	end
+end
+
+local function AlertSoundStopAll()
+	for i = 1, #afkfullscreenDB.alarms do
+		AlertSoundStopForAlarm(i);
+	end
+	alarmTimers = {};
+end
+
+-- For options test button and alarm removal
 ns.AlertSound404 = false;
-function ns.AlertSoundStart() -- for options
-	ns.AlertSound404 = not AlertSoundStart(true);
+function ns.AlertSoundStart(alarmIndex)
+	if alarmIndex then
+		-- Test specific alarm
+		local alarmConfig = afkfullscreenDB.alarms[alarmIndex];
+		ns.AlertSound404 = not AlertSoundExecuteForAlarm(alarmConfig);
+	else
+		-- Legacy: test first alarm
+		if #afkfullscreenDB.alarms > 0 then
+			ns.AlertSound404 = not AlertSoundExecuteForAlarm(afkfullscreenDB.alarms[1]);
+		else
+			ns.AlertSound404 = true;
+		end
+	end
 end
+
+-- Expose stop function for options
+ns.AlertSoundStopForAlarm = AlertSoundStopForAlarm;
 
 -------------------------------------------------
 -- model mixin functions
@@ -668,7 +748,7 @@ function AFKFullscreenFrameMixin:OnShow()
 
 	self.PanelBackgroundModel:SetShown(self.PanelBackgroundModel.SetToShow);
 
-	AlertSoundStart()
+	AlertSoundStartAll()
 
 	if not ticker then
 		ticker = C_Timer.NewTicker(1,TickerFunc);
@@ -686,7 +766,7 @@ function AFKFullscreenFrameMixin:OnHide()
 		self.PanelClockModel:Hide();
 	end
 	self.PanelBackgroundModel:Hide();
-	AlertSoundStop();
+	AlertSoundStopAll();
 	if ticker then
 		ticker:Cancel();
 		ticker = nil;
