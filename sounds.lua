@@ -726,10 +726,18 @@ local sk = {
 	"WOWLABS_AREA_SELECT_HOVER",
 };
 
-local skValues = {}
+local skGroups,skValues = {},{}
 for k,v in pairs(SOUNDKIT) do
 	if not (v==0 or exclude(k)) then
-		skValues[k] = L["SOUNDKIT."..k];
+		local grp,g2 = strsplit("_",k);
+		if grp:len()<2 then
+			grp = grp.."_"..g2;
+		end
+		skGroups[grp] = rawget(L,"SK_GROUP."..grp) and L["SK_GROUP."..grp] or (type(_G[grp])=="string" and _G[grp]) or grp;
+		if not skValues[grp] then
+			skValues[grp] = {};
+		end
+		skValues[grp][k] = rawget(L,"SOUNDKIT."..k) and L["SOUNDKIT."..k] or (type(_G[k])=="string" and _G[k]) or k;
 	end
 end
 
@@ -751,10 +759,19 @@ function ns.GetSoundsFromSM()
 	return tmp;
 end
 
-function ns.GetSoundsFromSK()
-	return skValues;
+function ns.GetSoundsFromSK(info)
+	local index = tonumber((info[#info-1]:gsub("^alarm::","")));
+	local key = info[#info];
+	if key=="sound_sk_group" then
+		return skGroups;
+	end
+	if afkfullscreenDB.alarms[index].sound_sk_group then
+		return skValues[afkfullscreenDB.alarms[index].sound_sk_group] or {};
+	end
+	return {}
 end
 
+--[=[
 local function GetSoundSourceValues(info)
 	local all = C_CVar.GetCVar(sound_channel_all)
 	local status = all and "" or "(Currently all muted!)";
@@ -769,4 +786,4 @@ local function GetSoundSourceValues(info)
 	end
 	return l;
 end
-
+--]=]
