@@ -670,7 +670,7 @@ function ns.dbIntegrityCheck()
 			end
 			if oldKey and curKey then
 				t[curKey] = afkfullscreenDB[oldKey] or alarm_defaults[curKey];
-				--afkfullscreenDB[oldKey] = nil;
+				afkfullscreenDB[oldKey] = nil;
 				add=true;
 			end
 		end
