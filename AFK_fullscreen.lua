@@ -870,7 +870,11 @@ function AFKFullscreenFrameMixin:OnEvent(event, ...)
 		self:UnregisterEvent(event);
 	elseif event=="PLAYER_ENTERING_WORLD" or event=="PLAYER_FLAGS_CHANGED" then
 		C_Timer.After(0.314159,function()
-			if not UnitIsAFK("player") then
+			local isAFK = UnitIsAFK("player")
+			if issecretvalue(isAFK) or canaccessvalue(isAFK)==false then
+				return; -- BULLSHIT!!!!!
+			end
+			if not isAFK then
 				afkfullscreenCharDB.LoggedOutWhileAFK = nil;
 			end
 			CheckAFK(self,event=="PLAYER_ENTERING_WORLD");
