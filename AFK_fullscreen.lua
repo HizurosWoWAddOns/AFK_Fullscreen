@@ -6,7 +6,8 @@ afkfullscreenDB = {};
 local addon, ns = ...;
 local L = ns.L;
 ns.debugMode = "@project-version@"=="@".."project-version".."@";
-LibStub("HizurosSharedTools").RegisterPrint(ns,addon,"AFK");
+local HST = LibStub("HizurosSharedTools");
+HST.RegisterPrint(ns,addon,"AFK");
 
 local media,ticker,demoticker = "Interface\\AddOns\\"..addon.."\\media\\";
 local alarmTimers = {}; -- alarmTimers[index] = {delayTimer, repeatingTicker, success, soundHandle}
@@ -871,7 +872,7 @@ function AFKFullscreenFrameMixin:OnEvent(event, ...)
 	elseif event=="PLAYER_ENTERING_WORLD" or event=="PLAYER_FLAGS_CHANGED" then
 		C_Timer.After(0.314159,function()
 			local isAFK = UnitIsAFK("player")
-			if issecretvalue(isAFK) or canaccessvalue(isAFK)==false then
+			if (issecretvalue and issecretvalue(isAFK)) or (canaccessvalue and canaccessvalue(isAFK))==false then
 				return; -- BULLSHIT!!!!!
 			end
 			if not isAFK then
