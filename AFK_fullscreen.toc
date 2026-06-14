@@ -2,7 +2,7 @@
 ## Title: AFK Fullscreen Warning
 ## Notes: Signelice your character are afk as fullscreen info like low health or out of control warn.
 ## Author: Hizuro
-## IconTexture: 1029723
+## IconTexture: Interface\AddOns\AFK_fullscreen\media\Ability_Foundryraid_Dormant.tga
 ## Version: @project-version@
 
 ## Category-enUS: User Interface
