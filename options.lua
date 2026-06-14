@@ -441,14 +441,22 @@ local alarm_tpl = {
 		sound_delete = {
 			type = "execute", order = 2,
 			name=DELETE,
-			func = function()
+			func = function(info,value)
+				local alarmIndex, key = tonumber((info[#info-1]:gsub("^alarm::",""))),info[#info];
+				if not alarmIndex then
+					alarmIndex = tonumber((info[#info-2]:gsub("^alarm::","")));
+				end
+				if not (alarmIndex and afkfullscreenDB.alarms[alarmIndex]) then
+					return
+				end
+
 				-- Stop the alarm if it's running
 				if ns.AlertSoundStopForAlarm then
-					ns.AlertSoundStopForAlarm(index);
+					ns.AlertSoundStopForAlarm(alarmIndex);
 				end
 
 				-- Remove from array
-				tremove(afkfullscreenDB.alarms, index);
+				tremove(afkfullscreenDB.alarms, alarmIndex);
 
 				-- Refresh UI
 				if ACD.OpenFrames[addon] then
