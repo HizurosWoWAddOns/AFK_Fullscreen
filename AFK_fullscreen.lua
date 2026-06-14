@@ -9,6 +9,8 @@ ns.debugMode = "@project-version@"=="@".."project-version".."@";
 local HST = LibStub("HizurosSharedTools");
 HST.RegisterPrint(ns,addon,"AFK");
 
+local issecretvalue, canaccessvalue = issecretvalue or function() return end, canaccessvalue or function() return true end
+
 local media,ticker,demoticker = "Interface\\AddOns\\"..addon.."\\media\\";
 local alarmTimers = {}; -- alarmTimers[index] = {delayTimer, repeatingTicker, success, soundHandle}
 local PlayerPositionFix = {
@@ -30,6 +32,14 @@ ns.LSM = LibStub("LibSharedMedia-3.0")
 -------------------------------------------------
 -- misc local functions
 -------------------------------------------------
+
+local function IsAFK()
+	local isAFK = UnitIsAFK("player")
+	if issecretvalue(isAFK) and canaccessvalue(isAFK) then
+		return; -- MEGA BULLSHIT!!!!!
+	end
+	return isAFK;
+end
 
 local function IsCinematic()
 	return IsInCinematicScene() or InCinematic() or CinematicFrame:IsVisible() or MovieFrame:IsVisible();
@@ -247,7 +257,7 @@ local function DemoTickerFunc()
 end
 
 local function CheckAFK(self,PEW)
-	local isAFK = UnitIsAFK("player");
+	local isAFK = IsAFK();
 	if isAFK and not self:IsShown() then
 		self:Show();
 		if PEW then
@@ -871,11 +881,7 @@ function AFKFullscreenFrameMixin:OnEvent(event, ...)
 		self:UnregisterEvent(event);
 	elseif event=="PLAYER_ENTERING_WORLD" or event=="PLAYER_FLAGS_CHANGED" then
 		C_Timer.After(0.314159,function()
-			local isAFK = UnitIsAFK("player")
-			if (issecretvalue and issecretvalue(isAFK)) or (canaccessvalue and canaccessvalue(isAFK))==false then
-				return; -- BULLSHIT!!!!!
-			end
-			if not isAFK then
+			if not IsAFK() then
 				afkfullscreenCharDB.LoggedOutWhileAFK = nil;
 			end
 			CheckAFK(self,event=="PLAYER_ENTERING_WORLD");
@@ -884,7 +890,7 @@ function AFKFullscreenFrameMixin:OnEvent(event, ...)
 		securecall("SetUIVisibility",true);
 	elseif self:IsVisible() and (event=="CINEMATIC_START" or event=="CINEMATIC_STOP" or event=="PLAY_MOVIE") then
 		updatePanelPosition();
-	elseif event=="PLAYER_LOGOUT" and UnitIsAFK("player") then
+	elseif event=="PLAYER_LOGOUT" and isAFK then
 		afkfullscreenCharDB.LoggedOutWhileAFK = {(time()), self.timer};
 	end
 end
