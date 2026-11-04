@@ -35,7 +35,7 @@ ns.LSM = LibStub("LibSharedMedia-3.0")
 
 local function IsAFK()
 	local isAFK = UnitIsAFK("player")
-	if issecretvalue(isAFK) and canaccessvalue(isAFK) then
+	if issecretvalue(isAFK) and not canaccessvalue(isAFK) then
 		return; -- MEGA BULLSHIT!!!!!
 	end
 	return isAFK;

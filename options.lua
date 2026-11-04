@@ -71,6 +71,15 @@ end
 local dbDefaultsChar = {
 	fullscreenwarning_factionlogo_color = nil, -- filled by function with faction color
 }
+local supporter = {
+	-- {<color>,<name>}, <localizations>, <donations>, <otherSupportTypes>, <special text>,
+	{"github","malfurion"},			false,false,false,{"githubPR"},
+	{"curseforge","BNS333"},		{"zhTW"},false,false,false,
+	{"curseforge","Crisll"},		{"esES"},false,false,false,
+	{"curseforge","KARMA_Zz"},		{"ruRU"},false,false,false,
+	{"curseforge","Nelfym"},		{"frFR"},false,false,false,
+	{"curseforge","pczombie09"},	{"koKR"},false,false,false,
+}
 local hiddenBySoundSource
 do
 	local soundObjectKey = {
@@ -710,7 +719,7 @@ function ns.registerOptions()
 	AC:RegisterOptionsTable(addon, options);
 	local opts = ACD:AddToBlizOptions(addon);
 	LibStub("HizurosSharedTools").BlizzOptions_ExpandOnShow(opts);
-	LibStub("HizurosSharedTools").AddCredit(addon);
+	LibStub("HizurosSharedTools").AddCredit(addon,options.args,{supporter=supporter});
 end
 
 function ns.registerSlashCommand()

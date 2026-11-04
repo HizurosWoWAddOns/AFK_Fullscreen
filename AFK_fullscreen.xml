@@ -3,6 +3,7 @@
 
 	<Script file="localizations.lua" />
 	<!--@do-not-package@-->
+	<Script file="localizations.imported.lua"/>
 	<Script file="localizations.workfile.lua"/>
 	<!--@end-do-not-package@-->
 	<Script file="AFK_fullscreen.lua" />
