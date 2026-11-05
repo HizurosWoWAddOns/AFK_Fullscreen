@@ -807,7 +807,7 @@ function AFKFullscreenFrameMixin:OnEvent(event, ...)
 
 		DataBrokerInit();
 
-		local playerName, playerName2 = {UnitName("player")}
+		local playerName, playerName2 = UnitName("player")
 		if not ns.IsForeverClient() then
 			playerName2 = GetRealmName()
 		end
