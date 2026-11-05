@@ -803,8 +803,12 @@ function AFKFullscreenFrameMixin:OnEvent(event, ...)
 
 		DataBrokerInit();
 
-		self.PanelInfos.Character:SetText(UnitName("player"));
-		self.PanelInfos.Realm:SetText(GetRealmName());
+		local n = {UnitName("player")}
+		if #n==1 then
+			n[2] = GetRealmName()
+		end
+		self.PanelInfos.Character:SetText(n[1]);
+		self.PanelInfos.Realm:SetText(n[2]); -- second name on forever and realm name on all other game clients
 
 		MovieFrame:HookScript("OnHide",function() updatePanelPosition(true) end);
 
