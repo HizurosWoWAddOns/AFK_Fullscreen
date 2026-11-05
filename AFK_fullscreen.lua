@@ -28,6 +28,10 @@ local LT = LibStub("LibTime-1.0");
 ns.AlertSoundError = false;
 ns.LSM = LibStub("LibSharedMedia-3.0")
 
+function ns.IsForeverClient()
+	return WOW_PROJECT_ID==WOW_PROJECT_CAMELOT;
+end
+
 
 -------------------------------------------------
 -- misc local functions
@@ -803,12 +807,12 @@ function AFKFullscreenFrameMixin:OnEvent(event, ...)
 
 		DataBrokerInit();
 
-		local n = {UnitName("player")}
-		if #n==1 then
-			n[2] = GetRealmName()
+		local playerName, playerName2 = {UnitName("player")}
+		if not ns.IsForeverClient() then
+			playerName2 = GetRealmName()
 		end
-		self.PanelInfos.Character:SetText(n[1]);
-		self.PanelInfos.Realm:SetText(n[2]); -- second name on forever and realm name on all other game clients
+		self.PanelInfos.Character:SetText(playerName);
+		self.PanelInfos.Realm:SetText(playerName2); -- second name on forever and realm name on all other game clients
 
 		MovieFrame:HookScript("OnHide",function() updatePanelPosition(true) end);
 
